@@ -1,0 +1,11 @@
+services:
+  mysql-db:
+    image: mysql:8.0
+    container_name: mysql-db-trivial-brick
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: TrivialBrickDB
+      MYSQL_USER: blazor
+      MYSQL_PASSWORD: blazor
+    ports:
+      - "3306:3306"
