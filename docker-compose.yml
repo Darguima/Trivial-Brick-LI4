@@ -1,11 +1,9 @@
 services:
-  mysql-db:
-    image: mysql:8.0
-    container_name: mysql-db-trivial-brick
+  sqlserver-db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: trivial-brick-db
     environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: TrivialBrickDB
-      MYSQL_USER: blazor
-      MYSQL_PASSWORD: blazor
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: "PAss++00"
     ports:
-      - "3306:3306"
+      - "1433:1433"

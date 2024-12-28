@@ -31,21 +31,21 @@ $ cd Trivial-Brick-LI4
 
 #### Installing system dependencies
 
-Some dependencies for the project are the .NET SDK, ASP.NET Core and docker. Check the best way to install it on your OS, but here are some generic examples to Arch and Ubuntu.
+Some dependencies are the .NET environment, others for the database. Check the best way to install it on your OS, but here are some generic examples to Arch and Ubuntu.
 
 ```bash
 # Arch
-$ sudo pacman -S dotnet-sdk aspnet-runtime docker mariadb
+$ sudo pacman -S dotnet-sdk aspnet-runtime docker mssql-tools
 
 # Ubuntu
-$ sudo apt install dotnet-sdk aspnet-runtime docker mariadb
+$ sudo apt install dotnet-sdk aspnet-runtime docker mssql-tools # this shouldn't work
 
 # ================
 
 # Both - Configuring docker
 $ sudo systemctl enable docker
 $ sudo systemctl start docker
-$ sudo usermod -aG docker $USER  # needs a restart
+$ sudo usermod -aG docker $USER # needs a restart
 ```
 
 #### Setting up the database
@@ -54,20 +54,17 @@ $ sudo usermod -aG docker $USER  # needs a restart
 # Start the database on the docker
 $ docker-compose up -d
 
-# Test it
-$ mariadb -h 127.0.0.1 -u blazoruser -p # password: blazorpass
-
-> SHOW DATABASES;
-
-# Create database
-$ mariadb -h 127.0.0.1 -u blazoruser -p < database/setup.sql
+# Creates and setup database
+$ sqlcmd -S localhost,1433 -U sa -P PAss++00 -i setup.sql -No
+# You should see - "Everything is ready!"
 ```
 
 #### Running the project
 
 ```bash
 $ docker-compose up -d # Start the database
-$ dotnet run # Start the project
+$ dotnet run # Run the project
+$ dotnet watch run # Run the project with hot reload
 ```
 
 ## Developed by 🧑‍💻:

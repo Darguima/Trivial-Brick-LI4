@@ -1,15 +1,24 @@
 ﻿@page "/counter"
+@rendermode InteractiveServer
 
 <PageTitle>Counter</PageTitle>
 
 <h1>Counter</h1>
+
+<p>Current User: @currentUser?.Nome</p>
 
 <p role="status">Current count: @currentCount</p>
 
 <button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
 
 @code {
+    private UserModel? currentUser;
     private int currentCount = 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        currentUser = await _users_db.Find(1);
+    }
 
     private void IncrementCount()
     {
