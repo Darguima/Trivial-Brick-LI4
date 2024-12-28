@@ -14,20 +14,20 @@ public class UserRepository : IUserRepository
     _db = db;
   }
 
-  public async Task<UserModel?> Find(int id)
+  public async Task<User?> Find(int id)
   {
-    string sql = "select * from Utilizador where ID = @id";
-    var users = await _db.LoadData<UserModel, dynamic>(sql, new { id });
+    string sql = "select * from Users where ID = @id";
+    var users = await _db.LoadData<User, dynamic>(sql, new { id });
     return users?.FirstOrDefault();
   }
 
-  public Task<List<UserModel>> FindAll()
+  public Task<List<User>> FindAll()
   {
-    string sql = "select * from Utilizador";
-    return _db.LoadData<UserModel, dynamic>(sql, new { });
+    string sql = "select * from Users";
+    return _db.LoadData<User, dynamic>(sql, new { });
   }
 
-  public Task<UserModel> Update(UserModel user)
+  public Task<User> Update(User user)
   {
     throw new NotImplementedException();
   }
