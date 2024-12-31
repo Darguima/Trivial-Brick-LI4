@@ -34,8 +34,8 @@ $ cd Trivial-Brick-LI4
 Some dependencies are the .NET environment, others for the database. Check the best way to install it on your OS, but here are some generic examples to Arch and Ubuntu.
 
 ```bash
-# Arch
-$ sudo pacman -S dotnet-sdk aspnet-runtime docker mssql-tools
+# Arch (with yay)
+$ yay -S dotnet-sdk aspnet-runtime docker mssql-tools
 
 # Ubuntu
 $ sudo apt install dotnet-sdk aspnet-runtime docker mssql-tools # this shouldn't work

@@ -1,0 +1,47 @@
+﻿@page "/login"
+@rendermode InteractiveServer
+
+<PageTitle>Login</PageTitle>
+
+<form @onsubmit="Authenticate">
+    <div class="form-group">
+        <label for="email">Email</label>
+        <input type="text" class="form-control" id="email" placeholder="Enter email" @bind="email" required>
+    </div>
+
+    <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" class="form-control" id="password" placeholder="Password" @bind="password" required>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Authenticate</button>
+
+@if (!string.IsNullOrWhiteSpace(statusMessage))
+{
+    <div class="alert alert-primary" role="alert">
+    @statusMessage
+</div>
+}
+
+</form>
+
+@code {
+    private string? email;
+    private string? password;
+    private string? statusMessage;
+
+    private async Task Authenticate()
+    {
+        if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
+        {
+            statusMessage = "Email and password are required";
+            StateHasChanged();
+            return;
+        }
+
+        Client? client = await _clients_db.Authenticate(email, password);
+
+        statusMessage = client != null ? $"Welcome Client {client.Name}" : "Authentication failed";
+        StateHasChanged();
+    }
+}

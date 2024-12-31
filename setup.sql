@@ -15,14 +15,14 @@ CREATE TABLE users (
 -- Creating the Admins table
 CREATE TABLE admins (
     user_id INT PRIMARY KEY,
-    FOREIGN KEY (user_id) REFERENCES users(ID)
+    FOREIGN KEY (user_id) REFERENCES users(ID) ON DELETE CASCADE
 );
 
 -- Creating the Clients table
 CREATE TABLE clients (
     user_id INT PRIMARY KEY,
     nif INT,
-    FOREIGN KEY (user_id) REFERENCES users(ID)
+    FOREIGN KEY (user_id) REFERENCES users(ID) ON DELETE CASCADE
 );
 
 -- Creating the Product table
@@ -47,8 +47,8 @@ CREATE TABLE products_parts (
     product_id INT NOT NULL,
     quantity INT NOT NULL,
     PRIMARY KEY (part_id, product_id),
-    FOREIGN KEY (part_id) REFERENCES parts(part_id),
-    FOREIGN KEY (product_id) REFERENCES products(model)
+    FOREIGN KEY (part_id) REFERENCES parts(part_id) ON DELETE NO ACTION,
+    FOREIGN KEY (product_id) REFERENCES products(model) ON DELETE CASCADE
 );
 
 -- Creating the Instruction table
@@ -58,7 +58,7 @@ CREATE TABLE instructions (
     image VARCHAR(255),
     qnt_parts INT NOT NULL,
     PRIMARY KEY (seq_num, product_id),
-    FOREIGN KEY (product_id) REFERENCES products(model)
+    FOREIGN KEY (product_id) REFERENCES products(model) ON DELETE CASCADE
 );
 
 -- Creating the Order table
@@ -70,8 +70,8 @@ CREATE TABLE orders (
     client_id INT NOT NULL,
     price DECIMAL(7,2) NOT NULL,
     date DATE NOT NULL,
-    FOREIGN KEY (product_id) REFERENCES products(model),
-    FOREIGN KEY (client_id) REFERENCES clients(user_id)
+    FOREIGN KEY (product_id) REFERENCES products(model) ON DELETE NO ACTION,
+    FOREIGN KEY (client_id) REFERENCES clients(user_id) ON DELETE NO ACTION
 );
 
 -- Creating the Invoice table
@@ -80,8 +80,8 @@ CREATE TABLE invoices (
     datetime DATETIME NOT NULL,
     client_id INT NOT NULL,
     order_id INT NOT NULL,
-    FOREIGN KEY (client_id) REFERENCES clients(user_id),
-    FOREIGN KEY (order_id) REFERENCES orders(order_id)
+    FOREIGN KEY (client_id) REFERENCES clients(user_id) ON DELETE NO ACTION,
+    FOREIGN KEY (order_id) REFERENCES orders(order_id) ON DELETE NO ACTION
 );
 
 -- Creating the AssemblyLine table
@@ -89,7 +89,7 @@ CREATE TABLE assembly_lines (
     assembly_line_id INT PRIMARY KEY,
     state VARCHAR(20) NOT NULL CHECK (state IN ('active', 'inactive')),
     order_id INT,
-    FOREIGN KEY (order_id) REFERENCES orders(order_id)
+    FOREIGN KEY (order_id) REFERENCES orders(order_id) ON DELETE SET NULL
 );
 
 -- Creating the Notification table
@@ -99,8 +99,8 @@ CREATE TABLE notifications (
     datetime DATETIME NOT NULL,
     client_id INT NOT NULL,
     order_id INT NOT NULL,
-    FOREIGN KEY (client_id) REFERENCES clients(user_id),
-    FOREIGN KEY (order_id) REFERENCES orders(order_id)
+    FOREIGN KEY (client_id) REFERENCES clients(user_id) ON DELETE CASCADE,
+    FOREIGN KEY (order_id) REFERENCES orders(order_id) ON DELETE CASCADE
 );
 
 -- Creating Admin

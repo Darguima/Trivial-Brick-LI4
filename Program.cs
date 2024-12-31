@@ -1,7 +1,7 @@
 using TrivialBrick.Components;
 
-using TrivialBrick;
 using TrivialBrick.DataLayer;
+using TrivialBrick.DataLayer.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,7 +10,7 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
 builder.Services.AddTransient<ISqlDataAccess, SqlDataAccess>();
-builder.Services.AddTransient<IUserRepository, UserRepository>();
+builder.Services.AddTransient<IClientRepository, ClientRepository>();
 
 var app = builder.Build();
 
