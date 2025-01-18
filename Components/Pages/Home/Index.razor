@@ -20,7 +20,8 @@ Welcome to your new app.
 
     private async Task _OnInitializedAsync()
     {
-        var userSession = await AuthStateProvider.GetUserSession();
+        var authStateProvider = (AuthStateProvider)AuthStateProvider;
+        var userSession = await authStateProvider.GetUserSession();
 
         if (userSession != null)
         {

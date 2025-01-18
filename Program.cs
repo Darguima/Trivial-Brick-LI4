@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Components.Authorization;
 using TrivialBrick.Authentication;
 
 using TrivialBrick.Components;
@@ -11,7 +12,7 @@ builder.Services.AddRazorComponents().AddInteractiveServerComponents();
 
 // Auth-related services
 builder.Services.AddAuthenticationCore();
-builder.Services.AddScoped<AuthStateProvider, AuthStateProvider>();
+builder.Services.AddScoped<AuthenticationStateProvider, AuthStateProvider>();
 
 // DataLayer-related services
 builder.Services.AddTransient<ISqlDataAccess, SqlDataAccess>();
