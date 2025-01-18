@@ -1,8 +1,8 @@
-using TrivialBrick.DataLayer.Models;
+using TrivialBrick.Data.Models;
 
-namespace TrivialBrick.DataLayer.Repositories
+namespace TrivialBrick.Data.Repositories
 {
-    public class ClientRepository(ISqlDataAccess db) : IClientRepository
+    public class ClientRepository(ISqlDataAccess db)
     {
         private readonly ISqlDataAccess _db = db;
 
@@ -12,6 +12,14 @@ namespace TrivialBrick.DataLayer.Repositories
             var clients = await _db.LoadData<Client, dynamic>(sql, new { id });
             return clients?.FirstOrDefault();
         }
+
+        public async Task<Client?> FindByMailPassword(string mail, string password)
+        {
+            string sql = "select * from users as u inner join clients as c on u.ID = c.user_id where Mail = @mail and Password = @password";
+            var client = await _db.LoadData<Client, dynamic>(sql, new { mail, password });
+            return client.FirstOrDefault();
+        }
+
         public Task<List<Client>> FindAll()
         {
             string sql = "select * from Users as u inner join Clients as c on u.ID = c.user_id";
@@ -30,9 +38,9 @@ namespace TrivialBrick.DataLayer.Repositories
             sql = "insert into Clients (user_id, nif) values (@id, @nif)";
             await _db.SaveData(sql, new { id, nif });
 
-            var client = await Find(id.ToString()) ?? throw new Exception("Some unexpected error occurred while creating the client");
+            var dbClient = await Find(id.ToString()) ?? throw new Exception("Some unexpected error occurred while creating the client");
 
-            return client;
+            return dbClient;
         }
 
         public Task Update(Client client)
@@ -41,17 +49,10 @@ namespace TrivialBrick.DataLayer.Repositories
             return _db.SaveData(sql, client);
         }
 
-        public Task Remove(string id)
+        public Task Remove(Client client)
         {
-            string sql = "delete from Clients where User_ID = @id; delete from Users where ID = @id";
-            return _db.SaveData(sql, new { id });
-        }
-
-        public async Task<Client?> Authenticate(string mail, string password)
-        {
-            string sql = "select * from users as u inner join clients as c on u.ID = c.user_id where Mail = @mail and Password = @password";
-            var client = await _db.LoadData<Client, dynamic>(sql, new { mail, password });
-            return client.FirstOrDefault();
+            string sql = "delete from Clients where User_ID = @ID; delete from Users where ID = @ID";
+            return _db.SaveData(sql, client);
         }
     }
 }

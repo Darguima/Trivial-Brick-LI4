@@ -2,7 +2,7 @@ using System.Data;
 using Dapper;
 using Microsoft.Data.SqlClient;
 
-namespace TrivialBrick.DataLayer;
+namespace TrivialBrick.Data;
 
 public class SqlDataAccess(IConfiguration config) : ISqlDataAccess
 {

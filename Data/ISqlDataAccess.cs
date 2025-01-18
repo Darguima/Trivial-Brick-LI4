@@ -1,4 +1,4 @@
-namespace TrivialBrick.DataLayer;
+namespace TrivialBrick.Data;
 
 public interface ISqlDataAccess
 {

@@ -1,17 +1,17 @@
 using TrivialBrick.Components;
-
-using TrivialBrick.DataLayer;
-using TrivialBrick.DataLayer.Repositories;
+using TrivialBrick.Data;
+using TrivialBrick.Data.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddRazorComponents()
-    .AddInteractiveServerComponents();
+builder.Services.AddRazorComponents().AddInteractiveServerComponents();
 
+// DataLayer-related services
 builder.Services.AddTransient<ISqlDataAccess, SqlDataAccess>();
-builder.Services.AddTransient<IClientRepository, ClientRepository>();
+builder.Services.AddTransient<ClientRepository>();
 
+// App
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -23,8 +23,7 @@ if (!app.Environment.IsDevelopment())
 app.UseStaticFiles();
 app.UseAntiforgery();
 
-app.MapRazorComponents<App>()
-    .AddInteractiveServerRenderMode();
+app.MapRazorComponents<App>().AddInteractiveServerRenderMode();
 
 app.Run();
 
