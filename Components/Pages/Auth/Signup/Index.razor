@@ -71,8 +71,7 @@
             client = await _clients_db.Add(name, email, password, nif);
             statusMessage = $"Welcome Client {client.Name}";
 
-            var authStateProvider = (AuthStateProvider)AuthStateProvider;
-            await authStateProvider.Login(client, false);
+            await AuthStateProvider.Login(client, false);
             NavManager.NavigateTo("/", true);
         }
         catch (Exception e)
