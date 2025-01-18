@@ -16,12 +16,12 @@
 
     <button type="submit" class="btn btn-primary">Authenticate</button>
 
-@if (!string.IsNullOrWhiteSpace(statusMessage))
-{
-    <div class="alert alert-primary" role="alert">
-    @statusMessage
-</div>
-}
+    @if (!string.IsNullOrWhiteSpace(statusMessage))
+    {
+        <div class="alert alert-primary" role="alert">
+            @statusMessage
+        </div>
+    }
 
 </form>
 
@@ -42,6 +42,20 @@
         Client? client = await _clients_db.FindByMailPassword(email, password);
 
         statusMessage = client != null ? $"Welcome Client {client.Name}" : "Authentication failed";
+
+        if (client == null)
+        {
+            statusMessage = "Authentication failed";
+        }
+        else
+        {
+            statusMessage = $"Welcome Client {client.Name}";
+
+            var authStateProvider = (AuthStateProvider)AuthStateProvider;
+            await authStateProvider.Login(client, false);
+            NavManager.NavigateTo("/", true);
+        }
+
         StateHasChanged();
     }
 }
