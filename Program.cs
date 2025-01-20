@@ -19,10 +19,12 @@ builder.Services.AddScoped<AuthenticationStateProvider, AuthStateProvider>();
 builder.Services.AddTransient<ISqlDataAccess, SqlDataAccess>();
 builder.Services.AddTransient<ClientRepository>();
 builder.Services.AddTransient<AssemblyLineRepository>();
+builder.Services.AddTransient<ProductRepository>();
 
 // BusinessLayer-related services
 builder.Services.AddTransient<BLClients>();
 builder.Services.AddTransient<BLAssemblyLines>();
+builder.Services.AddTransient<BLCatalog>();
 
 // App
 var app = builder.Build();

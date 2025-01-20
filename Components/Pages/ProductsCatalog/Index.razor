@@ -1,0 +1,116 @@
+﻿@page "/products-catalog"
+@rendermode InteractiveServer
+
+<PageTitle>products Catalog</PageTitle>
+
+<h3>Manage Products</h3>
+
+<div>
+    <label>Model:</label>
+    <input @bind="productModel" />
+</div>
+<div>
+    <label>Name:</label>
+    <input @bind="productName" />
+</div>
+<div>
+    <label>Price:</label>
+    <input @bind="productPrice" />
+</div>
+<div>
+    <label>Description:</label>
+    <input @bind="productDescription" />
+</div>
+<div>
+    <label>Image:</label>
+    <input @bind="productImage" />
+</div>
+
+<button @onclick="CreateProduct">Create Product</button>
+<button @onclick="GetProduct">Get Product</button>
+<button @onclick="GetAllProducts">Get All Products</button>
+
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <p style="color:red">@errorMessage</p>
+}
+
+@if (product != null)
+{
+    <div>
+        <h4>Product Details</h4>
+        <p>Model: @product.Model</p>
+        <p>Name: @product.Name</p>
+        <p>Price: @product.Price</p>
+        <p>Description: @product.Description</p>
+        <p>Image: @product.Image</p>
+    </div>
+}
+
+@if (products != null)
+{
+    <div>
+        <h4>All Products</h4>
+        <ul>
+            @foreach (var prod in products)
+            {
+                <li>@prod.Name - @prod.Price</li>
+            }
+        </ul>
+    </div>
+}
+
+@code {
+    private int productModel;
+    private string productName = string.Empty;
+    private int productPrice;
+    private string productDescription = string.Empty;
+    private string productImage = string.Empty;
+
+    private Product? product;
+    private List<Product>? products;
+    private string? errorMessage;
+
+    private async Task CreateProduct()
+    {
+        try
+        {
+            product = await _catalogs.CreateProduct(productModel, productName, productPrice, productDescription, productImage);
+            products = null; // Clear the list to avoid confusion
+            errorMessage = null; // Clear any previous error message
+        }
+        catch (Exception ex)
+        {
+            errorMessage = ex.Message;
+        }
+    }
+
+    private async Task GetProduct()
+    {
+        try
+        {
+            product = await _catalogs.GetProduct(productModel);
+            products = null; // Clear the list to avoid confusion
+            errorMessage = null; // Clear any previous error message
+        }
+        catch (Exception ex)
+        {
+            errorMessage = ex.Message;
+        }
+    }
+
+    private async Task GetAllProducts()
+    {
+        try
+        {
+            products = await _catalogs.GetAllProducts();
+            product = null; // Clear the single product to avoid confusion
+            errorMessage = null; // Clear any previous error message
+        }
+        catch (Exception ex)
+        {
+            errorMessage = ex.Message;
+        }
+    }
+}
+
