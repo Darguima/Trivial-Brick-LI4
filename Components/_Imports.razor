@@ -15,8 +15,9 @@
 @inject NavigationManager NavManager
 
 @using TrivialBrick
-@using TrivialBrick.Data
-@using TrivialBrick.Data.Repositories
+@using TrivialBrick.Business
 @using TrivialBrick.Data.Models
 
-@inject ClientRepository _clients_db
+@inject BLClients _clients
+@inject BLAssemblyLines _assembly_lines
+

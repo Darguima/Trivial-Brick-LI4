@@ -1,0 +1,95 @@
+﻿@page "/assemblyLines"
+@rendermode InteractiveServer
+
+<PageTitle>Assembly Lines</PageTitle>
+
+<h1>Assembly Lines!</h1>
+
+<p>List all the Assembly Lines here, and also options to create new ones.</p>
+
+<div class="form-group">
+    <label for="assemblyLineId">Assembly Line ID</label>
+    <input type="text" class="form-control" id="assemblyLineId" @bind="assemblyLineId"
+        placeholder="Enter Assembly Line ID" />
+</div>
+
+<button class="btn btn-primary" @onclick="CreateAssemblyLine">Create Assembly Line</button>
+<button class="btn btn-secondary" @onclick="GetAssemblyLine">Get Assembly Line</button>
+<button class="btn btn-info" @onclick="GetAllAssemblyLines">Get All Assembly Lines</button>
+
+@if (!string.IsNullOrWhiteSpace(errorMessage))
+{
+    <div class="alert alert-danger mt-3">
+    <strong>Error:</strong> @errorMessage
+</div>
+}
+
+@if (assemblyLine != null)
+{
+    <div class="alert alert-success mt-3">
+    <strong>Assembly Line:</strong> @assemblyLine.Assembly_line_id - @assemblyLine.State
+</div>
+}
+
+@if (assemblyLines != null && assemblyLines.Count > 0)
+{
+    <div class="mt-3">
+    <h4>All Assembly Lines</h4>
+    <ul class="list-group">
+        @foreach (var line in assemblyLines)
+            {
+                <li class="list-group-item">@line.Assembly_line_id - @line.State</li>
+            }
+        </ul>
+    </div>
+}
+
+
+@code {
+    private string assemblyLineId = string.Empty;
+    private AssemblyLine? assemblyLine;
+    private List<AssemblyLine>? assemblyLines;
+    private string? errorMessage;
+
+    private async Task CreateAssemblyLine()
+    {
+        try
+        {
+            assemblyLine = await _assembly_lines.CreateAssemblyLine(assemblyLineId);
+            assemblyLines = null; // Clear the list to avoid confusion
+            errorMessage = null; // Clear any previous error message
+        }
+        catch (Exception ex)
+        {
+            errorMessage = ex.Message;
+        }
+    }
+
+    private async Task GetAssemblyLine()
+    {
+        try
+        {
+            assemblyLine = await _assembly_lines.GetAssemblyLine(assemblyLineId);
+            assemblyLines = null; // Clear the list to avoid confusion
+            errorMessage = null; // Clear any previous error message
+        }
+        catch (Exception ex)
+        {
+            errorMessage = ex.Message;
+        }
+    }
+
+    private async Task GetAllAssemblyLines()
+    {
+        try
+        {
+            assemblyLines = await _assembly_lines.GetAllAssemblyLines();
+            assemblyLine = null; // Clear the single assembly line to avoid confusion
+            errorMessage = null; // Clear any previous error message
+        }
+        catch (Exception ex)
+        {
+            errorMessage = ex.Message;
+        }
+    }
+}

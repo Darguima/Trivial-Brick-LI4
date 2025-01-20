@@ -2,6 +2,7 @@ USE master;
 
 DROP DATABASE IF EXISTS TrivialBrickDB;
 CREATE DATABASE TrivialBrickDB;
+GO
 USE TrivialBrickDB;
 
 -- Creating the Users table
@@ -107,5 +108,6 @@ CREATE TABLE notifications (
 INSERT INTO Users (name, mail, password) VALUES ('admin', 'admin@TrivialBrick.pt', 'admin');
 INSERT INTO Admins (user_id) SELECT ID FROM Users WHERE name = 'admin';
 
+GO
 -- Print message to terminal
 PRINT 'Everything is ready!';

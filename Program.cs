@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Components.Authorization;
 using TrivialBrick.Authentication;
 
 using TrivialBrick.Components;
+using TrivialBrick.Business;
 using TrivialBrick.Data;
 using TrivialBrick.Data.Repositories;
 
@@ -17,6 +18,11 @@ builder.Services.AddScoped<AuthenticationStateProvider, AuthStateProvider>();
 // DataLayer-related services
 builder.Services.AddTransient<ISqlDataAccess, SqlDataAccess>();
 builder.Services.AddTransient<ClientRepository>();
+builder.Services.AddTransient<AssemblyLineRepository>();
+
+// BusinessLayer-related services
+builder.Services.AddTransient<BLClients>();
+builder.Services.AddTransient<BLAssemblyLines>();
 
 // App
 var app = builder.Build();

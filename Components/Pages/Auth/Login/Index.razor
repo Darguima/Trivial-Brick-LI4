@@ -39,7 +39,7 @@
             return;
         }
 
-        Client? client = await _clients_db.FindByMailPassword(email, password);
+        Client? client = await _clients.AuthenticateUser(email, password);
 
         statusMessage = client != null ? $"Welcome Client {client.Name}" : "Authentication failed";
 

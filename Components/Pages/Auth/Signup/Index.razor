@@ -65,15 +65,23 @@
             return;
         }
 
-        Client client;
+        Client? client;
         try
         {
-            client = await _clients_db.Add(name, email, password, nif);
-            statusMessage = $"Welcome Client {client.Name}";
+            client = await _clients.CreateUser(name, email, password, nif);
 
-            var authStateProvider = (AuthStateProvider)AuthStateProvider;
-            await authStateProvider.Login(client, false);
-            NavManager.NavigateTo("/", true);
+            if (client == null)
+            {
+                statusMessage = "Authentication failed";
+            }
+            else
+            {
+                statusMessage = $"Welcome Client {client.Name}";
+
+                var authStateProvider = (AuthStateProvider)AuthStateProvider;
+                await authStateProvider.Login(client, false);
+                NavManager.NavigateTo("/", true);
+            }
         }
         catch (Exception e)
         {
