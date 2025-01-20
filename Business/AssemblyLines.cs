@@ -12,18 +12,18 @@ This business layer is responsible by:
 
 public class BLAssemblyLines(AssemblyLineRepository assemblyLineRepository)
 {
-  public async Task<AssemblyLine?> CreateAssemblyLine(string id)
-  {
-    return await assemblyLineRepository.Add(id);
-  }
+    public async Task<AssemblyLine?> CreateAssemblyLine(string id)
+    {
+        return await assemblyLineRepository.Add(id);
+    }
 
-  public async Task<AssemblyLine?> GetAssemblyLine(string id)
-  {
-    return await assemblyLineRepository.Find(id);
-  }
+    public async Task<AssemblyLine?> GetAssemblyLine(string id)
+    {
+        return await assemblyLineRepository.Find(id);
+    }
 
-  public async Task<List<AssemblyLine>> GetAllAssemblyLines()
-  {
-    return await assemblyLineRepository.FindAll();
-  }
+    public async Task<List<AssemblyLine>> GetAllAssemblyLines()
+    {
+        return await assemblyLineRepository.FindAll();
+    }
 }

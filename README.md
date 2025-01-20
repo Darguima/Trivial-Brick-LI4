@@ -65,6 +65,7 @@ $ sqlcmd -S localhost,1433 -U sa -P PAss++00 -i setup.sql -No
 $ docker-compose up -d # Start the database
 $ dotnet run # Run the project
 $ dotnet watch run # Run the project with hot reload
+$ dotnet format Trivial-Brick-LI4.sln # Format the code
 ```
 
 ## Developed by 🧑‍💻:
