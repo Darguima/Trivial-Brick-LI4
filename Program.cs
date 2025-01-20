@@ -20,11 +20,13 @@ builder.Services.AddTransient<ISqlDataAccess, SqlDataAccess>();
 builder.Services.AddTransient<ClientRepository>();
 builder.Services.AddTransient<AssemblyLineRepository>();
 builder.Services.AddTransient<ProductRepository>();
+builder.Services.AddTransient<OrderRepository>();
 
 // BusinessLayer-related services
 builder.Services.AddTransient<BLClients>();
 builder.Services.AddTransient<BLAssemblyLines>();
 builder.Services.AddTransient<BLCatalog>();
+builder.Services.AddTransient<BLOrders>();
 
 // App
 var app = builder.Build();
