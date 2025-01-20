@@ -131,6 +131,12 @@
     {
         try
         {
+            if (line.Order_id != null)
+            {
+                errorMessage = "Cannot delete an assembly line with an active order. Please try again later.";
+                return;
+            }
+
             await _assembly_lines.DeleteAssemblyLine(line);
 
             if (assemblyLine != null && assemblyLine.Assembly_line_id == line.Assembly_line_id)
