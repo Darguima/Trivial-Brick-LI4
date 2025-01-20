@@ -9,8 +9,8 @@ namespace TrivialBrick.Data.Repositories
         public async Task<AssemblyLine?> Find(string id)
         {
             string sql = "select * from assembly_lines where assembly_line_id = @id";
-            var clients = await _db.LoadData<AssemblyLine, dynamic>(sql, new { id });
-            return clients?.FirstOrDefault();
+            var assemblyLines = await _db.LoadData<AssemblyLine, dynamic>(sql, new { id });
+            return assemblyLines?.FirstOrDefault();
         }
 
         public Task<List<AssemblyLine>> FindAll()
@@ -26,16 +26,16 @@ namespace TrivialBrick.Data.Repositories
             return new AssemblyLine { Assembly_line_id = ID, State = state, Order_id = orderId };
         }
 
-        public Task Update(AssemblyLine client)
+        public Task Update(AssemblyLine assemblyLine)
         {
             string sql = "update assembly_lines set state = @State, order_id = @OrderId where assembly_line_id = @ID";
-            return _db.SaveData(sql, client);
+            return _db.SaveData(sql, assemblyLine);
         }
 
-        public Task Remove(AssemblyLine client)
+        public Task Remove(AssemblyLine assemblyLine)
         {
             string sql = "delete from assembly_lines where assembly_line_id = @ID";
-            return _db.SaveData(sql, client);
+            return _db.SaveData(sql, assemblyLine);
         }
     }
 }
