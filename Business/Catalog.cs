@@ -29,4 +29,15 @@ public class BLCatalog(ProductRepository productRepository)
     {
         return await productRepository.FindAll();
     }
+
+   public async Task UpdateProduct(Product product)
+    {
+        await productRepository.Update(product);
+    }
+
+    public async Task RemoveProduct(Product product)
+    {
+        await productRepository.Remove(product);
+    }
+
 }
