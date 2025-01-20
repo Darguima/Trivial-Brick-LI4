@@ -30,7 +30,7 @@ public class BLCatalog(ProductRepository productRepository)
         return await productRepository.FindAll();
     }
 
-   public async Task UpdateProduct(Product product)
+    public async Task UpdateProduct(Product product)
     {
         await productRepository.Update(product);
     }
