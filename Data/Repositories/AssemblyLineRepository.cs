@@ -29,13 +29,13 @@ namespace TrivialBrick.Data.Repositories
         public Task Update(AssemblyLine assemblyLine)
         {
             string sql = "update assembly_lines set state = @State, order_id = @OrderId where assembly_line_id = @ID";
-            return _db.SaveData(sql, assemblyLine);
+            return _db.SaveData(sql, new { ID = assemblyLine.Assembly_line_id, State = assemblyLine.State.ToString(), OrderId = assemblyLine.Order_id });
         }
 
         public Task Remove(AssemblyLine assemblyLine)
         {
             string sql = "delete from assembly_lines where assembly_line_id = @ID";
-            return _db.SaveData(sql, assemblyLine);
+            return _db.SaveData(sql, new { ID = assemblyLine.Assembly_line_id });
         }
     }
 }

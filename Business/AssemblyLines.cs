@@ -26,4 +26,15 @@ public class BLAssemblyLines(AssemblyLineRepository assemblyLineRepository)
     {
         return await assemblyLineRepository.FindAll();
     }
+
+    public async Task UpdateAssemblyLine(AssemblyLine assemblyLine)
+    {
+        await assemblyLineRepository.Update(assemblyLine);
+    }
+
+    public async Task DeleteAssemblyLine(AssemblyLine assemblyLine)
+    {
+        await assemblyLineRepository.Remove(assemblyLine);
+    }
+
 }

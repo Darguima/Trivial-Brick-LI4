@@ -28,6 +28,8 @@
 {
     <div class="alert alert-success mt-3">
     <strong>Assembly Line:</strong> @assemblyLine.Assembly_line_id - @assemblyLine.State
+    <button class="btn btn-warning ml-2" @onclick="() => EditAssemblyLineState(assemblyLine)">Edit State</button>
+    <button class="btn btn-danger ml-2" @onclick="() => DeleteAssemblyLine(assemblyLine)">Delete</button>
 </div>
 }
 
@@ -38,12 +40,15 @@
     <ul class="list-group">
         @foreach (var line in assemblyLines)
             {
-                <li class="list-group-item">@line.Assembly_line_id - @line.State</li>
+                <li class="list-group-item">
+                    @line.Assembly_line_id - @line.State
+                    <button class="btn btn-warning ml-2" @onclick="() => EditAssemblyLineState(line)">Edit State</button>
+                    <button class="btn btn-danger ml-2" @onclick="() => DeleteAssemblyLine(line)">Delete</button>
+                </li>
             }
         </ul>
     </div>
 }
-
 
 @code {
     private string assemblyLineId = string.Empty;
@@ -86,6 +91,62 @@
             assemblyLines = await _assembly_lines.GetAllAssemblyLines();
             assemblyLine = null; // Clear the single assembly line to avoid confusion
             errorMessage = null; // Clear any previous error message
+        }
+        catch (Exception ex)
+        {
+            errorMessage = ex.Message;
+        }
+    }
+
+    private async Task EditAssemblyLineState(AssemblyLine line)
+    {
+        try
+        {
+            if (line.State == AssemblyLineState.Active)
+            {
+                line.State = AssemblyLineState.Inactive;
+            }
+            else
+            {
+                line.State = AssemblyLineState.Active;
+            }
+            await _assembly_lines.UpdateAssemblyLine(line);
+
+            if (assemblyLine != null && assemblyLine.Assembly_line_id == line.Assembly_line_id)
+            {
+                assemblyLine = line; // Update the individual assembly line
+            }
+            else
+            {
+                await GetAllAssemblyLines(); // Update the list of all assembly lines
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = ex.Message;
+        }
+    }
+
+    private async Task DeleteAssemblyLine(AssemblyLine line)
+    {
+        try
+        {
+            if (line.Order_id != null)
+            {
+                errorMessage = "Cannot delete an assembly line with an active order. Please try again later.";
+                return;
+            }
+
+            await _assembly_lines.DeleteAssemblyLine(line);
+
+            if (assemblyLine != null && assemblyLine.Assembly_line_id == line.Assembly_line_id)
+            {
+                assemblyLine = null; // Clear the individual assembly line
+            }
+            else
+            {
+                await GetAllAssemblyLines(); // Update the list of all assembly lines
+            }
         }
         catch (Exception ex)
         {
