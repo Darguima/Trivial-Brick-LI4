@@ -1,7 +1,7 @@
 ﻿@page "/products-catalog"
 @rendermode InteractiveServer
 
-<PageTitle>products Catalog</PageTitle>
+<PageTitle>Products Catalog</PageTitle>
 
 <h3>Manage Products</h3>
 
@@ -44,6 +44,8 @@
         <p>Price: @product.Price</p>
         <p>Description: @product.Description</p>
         <p>Image: @product.Image</p>
+        <button class="btn btn-warning ml-2" @onclick="() => ShowEditModal(product)">Edit</button>
+        <button class="btn btn-danger ml-2" @onclick="() => DeleteProduct(product)">Delete</button>
     </div>
 }
 
@@ -54,9 +56,50 @@
         <ul>
             @foreach (var prod in products)
             {
-                <li>@prod.Name - @prod.Price</li>
+                <li>
+                    @prod.Name - @prod.Price
+                    <button class="btn btn-warning ml-2" @onclick="() => ShowEditModal(prod)">Edit</button>
+                    <button class="btn btn-danger ml-2" @onclick="() => DeleteProduct(prod)">Delete</button>
+                </li>
             }
         </ul>
+    </div>
+}
+
+<!-- Edit Product Modal -->
+@if (isEditModalVisible)
+{
+    <div class="modal show d-block" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Product</h5>
+                    <button type="button" class="btn-close" @onclick="CloseEditModal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="editProductName">Name</label>
+                        <input type="text" class="form-control" id="editProductName" @bind="editProductName" />
+                    </div>
+                    <div class="form-group">
+                        <label for="editProductPrice">Price</label>
+                        <input type="number" class="form-control" id="editProductPrice" @bind="editProductPrice" />
+                    </div>
+                    <div class="form-group">
+                        <label for="editProductDescription">Description</label>
+                        <input type="text" class="form-control" id="editProductDescription" @bind="editProductDescription" />
+                    </div>
+                    <div class="form-group">
+                        <label for="editProductImage">Image</label>
+                        <input type="text" class="form-control" id="editProductImage" @bind="editProductImage" />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="CloseEditModal">Close</button>
+                    <button type="button" class="btn btn-primary" @onclick="EditProduct">Save changes</button>
+                </div>
+            </div>
+        </div>
     </div>
 }
 
@@ -71,6 +114,13 @@
     private List<Product>? products;
     private string? errorMessage;
 
+    private bool isEditModalVisible = false;
+    private Product? productToEdit;
+    private string editProductName = string.Empty;
+    private int editProductPrice;
+    private string editProductDescription = string.Empty;
+    private string editProductImage = string.Empty;
+
     private async Task CreateProduct()
     {
         try
@@ -78,6 +128,7 @@
             product = await _catalogs.CreateProduct(productModel, productName, productPrice, productDescription, productImage);
             products = null; // Clear the list to avoid confusion
             errorMessage = null; // Clear any previous error message
+            ClearInputFields(); // Clear input fields
         }
         catch (Exception ex)
         {
@@ -92,6 +143,7 @@
             product = await _catalogs.GetProduct(productModel);
             products = null; // Clear the list to avoid confusion
             errorMessage = null; // Clear any previous error message
+            ClearInputFields(); // Clear input fields
         }
         catch (Exception ex)
         {
@@ -106,11 +158,87 @@
             products = await _catalogs.GetAllProducts();
             product = null; // Clear the single product to avoid confusion
             errorMessage = null; // Clear any previous error message
+            ClearInputFields(); // Clear input fields
         }
         catch (Exception ex)
         {
             errorMessage = ex.Message;
         }
     }
-}
 
+    private void ShowEditModal(Product prod)
+    {
+        productToEdit = prod;
+        editProductName = prod.Name;
+        editProductPrice = prod.Price;
+        editProductDescription = prod.Description;
+        editProductImage = prod.Image;
+        isEditModalVisible = true;
+    }
+
+    private void CloseEditModal()
+    {
+        isEditModalVisible = false;
+    }
+
+    private async Task EditProduct()
+    {
+        if (productToEdit != null)
+        {
+            try
+            {
+                productToEdit.Name = editProductName;
+                productToEdit.Price = editProductPrice;
+                productToEdit.Description = editProductDescription;
+                productToEdit.Image = editProductImage;
+
+                await _catalogs.UpdateProduct(productToEdit);
+
+                if (product != null && product.Model == productToEdit.Model)
+                {
+                    product = productToEdit; // Update the individual product
+                }
+                else
+                {
+                    await GetAllProducts(); // Update the list of all products
+                }
+
+                CloseEditModal();
+            }
+            catch (Exception ex)
+            {
+                errorMessage = ex.Message;
+            }
+        }
+    }
+
+    private async Task DeleteProduct(Product prod)
+    {
+        try
+        {
+            await _catalogs.RemoveProduct(prod);
+
+            if (product != null && product.Model == prod.Model)
+            {
+                product = null; // Clear the individual product
+            }
+            else
+            {
+                await GetAllProducts(); // Update the list of all products
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = ex.Message;
+        }
+    }
+
+    private void ClearInputFields()
+    {
+        productModel = 0;
+        productName = string.Empty;
+        productPrice = 0;
+        productDescription = string.Empty;
+        productImage = string.Empty;
+    }
+}
