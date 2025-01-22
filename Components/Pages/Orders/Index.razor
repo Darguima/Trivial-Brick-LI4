@@ -43,7 +43,7 @@
 </div>
 <div class="form-group">
     <label for="date">Date</label>
-    <input type="date" class="form-control" id="date" @bind="date" />
+    <input type="datetime-local" class="form-control" id="date" @bind="date" />
 </div>
 
 <button class="btn btn-primary" @onclick="CreateOrder">Create Order</button>
@@ -58,7 +58,12 @@
 @if (order != null)
 {
     <div class="alert alert-success mt-3">
-        <strong>Order:</strong> @order.Order_id - @order.Address - @order.State - @order.Product_id - @order.Client_id - @order.Price - @order.Date
+        <strong>Order:</strong> @order.Order_id - @order.Address - @order.State - @order.Product_id - @order.Client_id - @order.Price - @order.Date.ToString("dd-MM-yyyy")
+        <button class="btn btn-warning ml-2" @onclick="() => ShowEditModal(order)">Edit</button>
+        @if (order.State == OrderState.Finished)
+        {
+            <button class="btn btn-danger ml-2" @onclick="() => DeleteOrder(order)">Delete</button>
+        }
     </div>
 }
 
@@ -69,9 +74,52 @@
         <ul class="list-group">
             @foreach (var ord in orders)
             {
-                <li class="list-group-item">@ord.Order_id - @ord.Address - @ord.State - @ord.Product_id - @ord.Client_id - @ord.Price - @ord.Date</li>
+                <li class="list-group-item">
+                    @ord.Order_id - @ord.Address - @ord.State - @ord.Product_id - @ord.Client_id - @ord.Price - @ord.Date.ToString("dd-MM-yyyy")
+                    <button class="btn btn-warning ml-2" @onclick="() => ShowEditModal(ord)">Edit</button>
+                    @if (ord.State == OrderState.Finished)
+                    {
+                        <button class="btn btn-danger ml-2" @onclick="() => DeleteOrder(ord)">Delete</button>
+                    }
+                </li>
             }
         </ul>
+    </div>
+}
+
+<!-- Edit Order Modal -->
+@if (isEditModalVisible)
+{
+    <div class="modal show d-block" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Order</h5>
+                    <button type="button" class="btn-close" @onclick="CloseEditModal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="editOrderState">State</label>
+                        <select class="form-control" id="editOrderState" @bind="editOrderState">
+                            <option value="Wait_line">Wait Line</option>
+                            <option value="Assembly_line">Assembly Line</option>
+                            <option value="Finished">Finished</option>
+                        </select>
+                    </div>
+                    @if (orderToEdit?.State != OrderState.Finished)
+                    {
+                        <div class="form-group">
+                            <label for="editOrderAddress">Address</label>
+                            <input type="text" class="form-control" id="editOrderAddress" @bind="editOrderAddress" />
+                        </div>
+                    }
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="CloseEditModal">Close</button>
+                    <button type="button" class="btn btn-primary" @onclick="EditOrder">Save changes</button>
+                </div>
+            </div>
+        </div>
     </div>
 }
 
@@ -87,11 +135,16 @@
     private List<Order>? orders;
     private string? errorMessage;
 
+    private bool isEditModalVisible = false;
+    private Order? orderToEdit;
+    private OrderState editOrderState;
+    private string editOrderAddress = string.Empty;
+
     private async Task CreateOrder()
     {
         try
         {
-            order = await _orders.CreateOrder(address, OrderState.Wait_line, productId, clientId, price, date);
+            order = await _orders.CreateOrder(address, state, productId, clientId, price, date);
             orders = null; // Clear the list to avoid confusion
             errorMessage = null; // Clear any previous error message
         }
@@ -122,6 +175,77 @@
             orders = await _orders.GetAllOrders();
             order = null; // Clear the single order to avoid confusion
             errorMessage = null; // Clear any previous error message
+        }
+        catch (Exception ex)
+        {
+            errorMessage = ex.Message;
+        }
+    }
+
+    private void ShowEditModal(Order ord)
+    {
+        orderToEdit = ord;
+        editOrderState = ord.State;
+        editOrderAddress = ord.Address;
+        isEditModalVisible = true;
+    }
+
+    private void CloseEditModal()
+    {
+        isEditModalVisible = false;
+    }
+
+    private async Task EditOrder()
+    {
+        if (orderToEdit != null)
+        {
+            try
+            {
+                // Ensure the state cannot be changed if it is already Finished
+                if (orderToEdit.State == OrderState.Finished && editOrderState != OrderState.Finished)
+                {
+                    errorMessage = "Cannot change the state of a finished order.";
+                    return;
+                }
+
+                orderToEdit.State = editOrderState;
+                if (orderToEdit.State != OrderState.Finished)
+                {
+                    orderToEdit.Address = editOrderAddress;
+                }
+
+                await _orders.UpdateOrder(orderToEdit);
+
+                if (order != null && order.Order_id == orderToEdit.Order_id)
+                {
+                    order = orderToEdit; // Update the individual order
+                }
+                else
+                {
+                    await GetAllOrders(); // Update the list of all orders
+                }
+
+                CloseEditModal();
+            }
+            catch (Exception ex)
+            {
+                errorMessage = ex.Message;
+            }
+        }
+    }
+
+    private async Task DeleteOrder(Order orderToDelete)
+    {
+        try
+        {
+            if (orderToDelete.State != OrderState.Finished)
+            {
+                errorMessage = "Only finished orders can be deleted.";
+                return;
+            }
+
+            await _orders.DeleteOrder(orderToDelete);
+            await GetAllOrders(); // Update the list of all orders
         }
         catch (Exception ex)
         {
