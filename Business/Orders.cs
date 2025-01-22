@@ -6,13 +6,13 @@ namespace TrivialBrick.Business;
 /*
 This business layer is responsible by:
 
-- orders
-- invoices
+- orders -> Done
+- invoices -> Done
 - notifications
 
 */
 
-public class BLOrders(OrderRepository orderRepository)
+public class BLOrders(OrderRepository orderRepository, InvoiceRepository invoiceRepository)
 {
     public async Task<Order?> CreateOrder(string address, OrderState state, int product_id, int client_id, decimal price, DateTime date)
     {
@@ -37,5 +37,30 @@ public class BLOrders(OrderRepository orderRepository)
     public async Task DeleteOrder(Order assemblyLine)
     {
         await orderRepository.Remove(assemblyLine);
+    }
+
+    public async Task<Invoice?> CreateInvoice(DateTime datetime, int client_id, int order_id)
+    {
+        return await invoiceRepository.Add(datetime, client_id, order_id);
+    }
+
+    public async Task<Invoice?> GetInvoice(int id)
+    {
+        return await invoiceRepository.Find(id);
+    }
+
+    public async Task<List<Invoice>> GetAllInvoices()
+    {
+        return await invoiceRepository.FindAll();
+    }
+
+    public async Task UpdateInvoice(Invoice invoice)
+    {
+        await invoiceRepository.Update(invoice);
+    }
+
+    public async Task DeleteInvoice(Invoice invoice)
+    {
+        await invoiceRepository.Remove(invoice);
     }
 }
