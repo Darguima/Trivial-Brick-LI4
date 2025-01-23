@@ -1,6 +1,30 @@
 header {
     display: flex;
     flex-direction: row;
+    align-items: center;
+    justify-content: space-evenly;
 
-    background-color: lightgray;
+    height: 64px;
+
+    background: rgb(141, 96, 15);
+    background: linear-gradient(90deg, rgba(141, 96, 15, 1) 0%, rgba(192, 131, 21, 1) 15%, rgba(243, 165, 27, 1) 50%, rgba(192, 131, 21, 1) 85%, rgba(141, 96, 15, 1) 100%);
+}
+
+.header-option {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background-color: #FA812F;
+    height: 50%;
+
+    border-radius: 10px;
+    border-color: black;
+    border-width: 1px;
+    border-style: solid;
+}
+
+.header-option span {
+    color: black;
+    font-size: 1.5em;
 }
