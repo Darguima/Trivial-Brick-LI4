@@ -97,4 +97,9 @@ public class BLOrders(OrderRepository orderRepository, NotificationRepository no
     {
         await notificationRepository.Remove(notification);
     }
+
+    public async Task<List<Order>> FindAllPendingOrders()
+    {
+        return await orderRepository.FindAllPendingOrders();
+    }
 }
