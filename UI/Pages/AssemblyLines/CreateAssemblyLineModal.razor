@@ -1,0 +1,59 @@
+<div class="modal @((modalVisible ? "show" : ""))" tabindex="-1" role="dialog" style="display:@(modalVisible ? "block" : "none");">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Create Assembly Line</h5>
+                <button type="button" class="close" @onclick="CloseModal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="assemblyLineId">Assembly Line ID</label>
+                    <input type="text" class="form-control" id="assemblyLineId" @bind-value="assemblyLineId" placeholder="Enter Assembly Line ID" required />
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" @onclick="CloseModal">Cancel</button>
+                <button type="button" class="btn btn-primary" @onclick="CreateAssemblyLine">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (showBackdrop)
+{
+    <div class="modal-backdrop fade show"></div>
+}
+
+@code {
+    [Parameter]
+    public EventCallback<string> OnCreateAssemblyLine { get; set; }
+
+    private string assemblyLineId = string.Empty;
+    private bool modalVisible { get; set; } = false;
+    private bool showBackdrop { get; set; } = false;
+
+    public void ShowModal()
+    {
+        modalVisible = true;
+        showBackdrop = true;
+        StateHasChanged();
+    }
+
+    public void CloseModal()
+    {
+        modalVisible = false;
+        showBackdrop = false;
+        StateHasChanged();
+    }
+
+    private async Task CreateAssemblyLine()
+    {
+        if (!string.IsNullOrWhiteSpace(assemblyLineId))
+        {
+            await OnCreateAssemblyLine.InvokeAsync(assemblyLineId);
+            CloseModal();
+        }
+    }
+}
