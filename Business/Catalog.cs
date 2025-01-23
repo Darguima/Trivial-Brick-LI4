@@ -13,11 +13,13 @@ This business layer is responsible by:
 
 */
 
-public class BLCatalog(ProductRepository productRepository, PartRepository partRepository, ProductPartRepository productPartRepository)
+public class BLCatalog(ProductRepository productRepository, PartRepository partRepository, ProductPartRepository productPartRepository, InstructionRepository instructionRepository)
 {
-    public async Task<Product?> CreateProduct(int model, string name, int price, string description, string image, List<Tuple<int, int>>? parts_list = null)
+    public async Task<Product?> CreateProduct(int model, string name, int price, string description, string image, List<Tuple<int, int>>? parts_list = null, List<Tuple<string, int>>? instructions = null)
     {
-        parts_list ??= new List<Tuple<int, int>>();
+        parts_list ??= [];
+        instructions ??= [];
+
         var product = await productRepository.Add(model, name, price, description, image);
 
         if (product != null)
@@ -25,6 +27,12 @@ public class BLCatalog(ProductRepository productRepository, PartRepository partR
             foreach (var part in parts_list)
             {
                 await AddPartToProduct(model, part.Item1, part.Item2);
+            }
+
+            for (int i = 0; i < instructions.Count; i++)
+            {
+                var instruction = instructions[i];
+                await AddInstructionToProduct(model, i, instruction.Item1, instruction.Item2);
             }
         }
 
@@ -34,6 +42,11 @@ public class BLCatalog(ProductRepository productRepository, PartRepository partR
     public async Task AddPartToProduct(int productId, int partId, int quantity)
     {
         await productPartRepository.AddProductPart(partId, productId, quantity);
+    }
+
+    public async Task AddInstructionToProduct(int productId, int seqNum, string image, int qntParts)
+    {
+        await instructionRepository.AddInstruction(productId, seqNum, image, qntParts);
     }
 
     public async Task<Product?> GetProduct(int model)
@@ -96,5 +109,18 @@ public class BLCatalog(ProductRepository productRepository, PartRepository partR
         await productPartRepository.RemoveProductPart(productPart);
     }
 
+    public async Task<Instruction?> GetInstruction(int productId, int seqNum)
+    {
+        return await instructionRepository.FindInstruction(productId, seqNum);
+    }
 
+    public async Task UpdateInstruction(Instruction instruction)
+    {
+        await instructionRepository.UpdateInstruction(instruction);
+    }
+
+    public async Task RemoveInstruction(Instruction instruction)
+    {
+        await instructionRepository.RemoveInstruction(instruction);
+    }
 }

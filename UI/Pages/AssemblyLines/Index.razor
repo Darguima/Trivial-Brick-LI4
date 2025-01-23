@@ -3,19 +3,7 @@
 
 <PageTitle>Assembly Lines</PageTitle>
 
-<h1>Assembly Lines!</h1>
-
-<p>List all the Assembly Lines here, and also options to create new ones.</p>
-
-<div class="form-group">
-    <label for="assemblyLineId">Assembly Line ID</label>
-    <input type="text" class="form-control" id="assemblyLineId" @bind="assemblyLineId"
-        placeholder="Enter Assembly Line ID" />
-</div>
-
-<button class="btn btn-primary" @onclick="CreateAssemblyLine">Create Assembly Line</button>
-<button class="btn btn-secondary" @onclick="GetAssemblyLine">Get Assembly Line</button>
-<button class="btn btn-info" @onclick="GetAllAssemblyLines">Get All Assembly Lines</button>
+<button class="btn btn-primary" @onclick="ShowCreateModal">+</button>
 
 @if (!string.IsNullOrWhiteSpace(errorMessage))
 {
@@ -26,43 +14,53 @@
 
 @if (assemblyLine != null)
 {
-    <div class="alert alert-success mt-3">
-    <strong>Assembly Line:</strong> @assemblyLine.Assembly_line_id - @assemblyLine.State
-    <button class="btn btn-warning ml-2" @onclick="() => EditAssemblyLineState(assemblyLine)">Edit State</button>
-    <button class="btn btn-danger ml-2" @onclick="() => DeleteAssemblyLine(assemblyLine)">Delete</button>
-</div>
+    <AssemblyLineCard AssemblyLine="@assemblyLine" 
+                      OnSave="SaveAssemblyLineState" 
+                      OnDelete="DeleteAssemblyLine" />
 }
 
 @if (assemblyLines != null && assemblyLines.Count > 0)
 {
     <div class="mt-3">
-    <h4>All Assembly Lines</h4>
-    <ul class="list-group">
-        @foreach (var line in assemblyLines)
+        <ul class="list-group">
+            @foreach (var line in assemblyLines)
             {
                 <li class="list-group-item">
-                    @line.Assembly_line_id - @line.State
-                    <button class="btn btn-warning ml-2" @onclick="() => EditAssemblyLineState(line)">Edit State</button>
-                    <button class="btn btn-danger ml-2" @onclick="() => DeleteAssemblyLine(line)">Delete</button>
+                    <AssemblyLineCard AssemblyLine="@line" 
+                                      OnSave="SaveAssemblyLineState" 
+                                      OnDelete="DeleteAssemblyLine" />
                 </li>
             }
         </ul>
     </div>
 }
 
+<CreateAssemblyLineModal @ref="modal" OnCreateAssemblyLine="HandleCreateAssemblyLine" />
+
 @code {
     private string assemblyLineId = string.Empty;
     private AssemblyLine? assemblyLine;
     private List<AssemblyLine>? assemblyLines;
+    private CreateAssemblyLineModal modal = new CreateAssemblyLineModal();
     private string? errorMessage;
 
-    private async Task CreateAssemblyLine()
+    protected override async Task OnInitializedAsync()
+    {
+        await GetAllAssemblyLines(); // Load data when the page initializes
+    }
+
+    private void ShowCreateModal()
+    {
+        modal.ShowModal();
+    }
+
+    private async Task HandleCreateAssemblyLine(string assemblyLineId)
     {
         try
         {
             assemblyLine = await _assembly_lines.CreateAssemblyLine(assemblyLineId);
-            assemblyLines = null; // Clear the list to avoid confusion
-            errorMessage = null; // Clear any previous error message
+            await GetAllAssemblyLines();
+            errorMessage = null;
         }
         catch (Exception ex)
         {
@@ -110,6 +108,27 @@
             {
                 line.State = AssemblyLineState.Active;
             }
+            await _assembly_lines.UpdateAssemblyLine(line);
+
+            if (assemblyLine != null && assemblyLine.Assembly_line_id == line.Assembly_line_id)
+            {
+                assemblyLine = line; // Update the individual assembly line
+            }
+            else
+            {
+                await GetAllAssemblyLines(); // Update the list of all assembly lines
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = ex.Message;
+        }
+    }
+
+    private async Task SaveAssemblyLineState(AssemblyLine line)
+    {
+        try
+        {
             await _assembly_lines.UpdateAssemblyLine(line);
 
             if (assemblyLine != null && assemblyLine.Assembly_line_id == line.Assembly_line_id)

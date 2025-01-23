@@ -6,8 +6,8 @@ namespace TrivialBrick.Business;
 /*
 This business layer is responsible by:
 
-- orders -> Done
-- invoices -> Done
+- orders
+- invoices
 - notifications
 
 */
@@ -15,18 +15,17 @@ This business layer is responsible by:
 public class BLOrders(OrderRepository orderRepository, NotificationRepository notificationRepository, InvoiceRepository invoiceRepository)
 {
     public async Task<Order?> CreateOrder(string address, OrderState state, int product_id, int client_id, decimal price, DateTime date)
+    {
+        var order = await orderRepository.Add(address, state, product_id, client_id, price, date);
+
+        if (order != null)
         {
-            var order = await orderRepository.Add(address, state, product_id, client_id, price, date);
-
-            if (order != null)
-            {
-                await CreateInvoice(DateTime.Now, client_id, order.Order_id);
-                await CreateNotification("Order queued for assembly line", date , client_id, order.Order_id);
-            }
-
-
-            return order;
+            await CreateInvoice(DateTime.Now, client_id, order.Order_id);
+            await CreateNotification("Order queued for assembly line", date, client_id, order.Order_id);
         }
+
+        return order;
+    }
 
     public async Task<Order?> GetOrder(int id)
     {
@@ -72,7 +71,7 @@ public class BLOrders(OrderRepository orderRepository, NotificationRepository no
     {
         await invoiceRepository.Remove(invoice);
     }
-    
+
     public async Task<Notification?> CreateNotification(string message, DateTime datetime, int client_id, int order_id)
     {
         return await notificationRepository.Add(message, datetime, client_id, order_id);

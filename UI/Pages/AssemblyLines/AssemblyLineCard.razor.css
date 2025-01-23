@@ -1,0 +1,24 @@
+.assembly-line-card {
+    border: 1px solid #ddd;
+    padding: 10px;
+    background-color: #F59B5E;
+}
+
+h5 {
+    font-size: 1.2rem;
+}
+
+p {
+    color: #555;
+}
+
+.backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);  /* Semi-transparent black */
+    z-index: 1040;  /* Ensure it's above other content but below the card */
+    backdrop-filter: blur(5px);  /* Optional: blur the background */
+}

@@ -1,0 +1,81 @@
+<div class="card assembly-line-card" style="@GetCardStyle()">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-4">
+                <h5 class="card-title">ID: @AssemblyLine.Assembly_line_id</h5>
+            </div>
+            <div class="col-4 text-center">
+                <p class="card-text state-text">@AssemblyLine.State</p>
+            </div>
+            <div class="col-4 text-end">
+                @if (!IsEditing)
+                {
+                    <button class="btn btn-primary edit-button" @onclick="StartEditing">Edit</button>
+                }
+                else
+                {
+                    <div class="edit-actions">
+                        <button class="btn btn-warning" @onclick="ToggleState">Edit State</button>
+                        <button class="btn btn-danger" @onclick="DeleteLine">Delete</button>
+                        <button class="btn btn-secondary" @onclick="CancelEdit">Cancel</button>
+                        <button class="btn btn-success" @onclick="SaveChanges">Save</button>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (IsEditing)
+{
+    <div class="backdrop"></div>
+}
+
+@code {
+    [Parameter]
+    public AssemblyLine AssemblyLine { get; set; } = default!;
+
+    [Parameter]
+    public EventCallback<AssemblyLine> OnDelete { get; set; }
+
+    [Parameter]
+    public EventCallback<AssemblyLine> OnSave { get; set; }
+
+    private bool IsEditing { get; set; } = false;
+    private AssemblyLineState OriginalState;
+
+    private string GetCardStyle()
+    {
+        return IsEditing ? "box-shadow: 0 0 10px rgba(0, 0, 0, 0.8); z-index: 1050;" : "";
+    }
+
+    private void StartEditing()
+    {
+        OriginalState = AssemblyLine.State; // Save the original state
+        IsEditing = true;
+    }
+
+    private void ToggleState()
+    {
+        AssemblyLine.State = AssemblyLine.State == AssemblyLineState.Active
+            ? AssemblyLineState.Inactive
+            : AssemblyLineState.Active;
+    }
+
+    private void CancelEdit()
+    {
+        AssemblyLine.State = OriginalState; // Revert to the original state
+        IsEditing = false;
+    }
+
+    private async Task SaveChanges()
+    {
+        await OnSave.InvokeAsync(AssemblyLine);
+        IsEditing = false; // Exit edit mode after saving
+    }
+
+    private async Task DeleteLine()
+    {
+        await OnDelete.InvokeAsync(AssemblyLine);
+    }
+}

@@ -23,6 +23,7 @@ builder.Services.AddTransient<ProductRepository>();
 builder.Services.AddTransient<OrderRepository>();
 builder.Services.AddTransient<PartRepository>();
 builder.Services.AddTransient<ProductPartRepository>();
+builder.Services.AddTransient<InstructionRepository>();
 builder.Services.AddTransient<InvoiceRepository>();
 builder.Services.AddTransient<NotificationRepository>();
 
