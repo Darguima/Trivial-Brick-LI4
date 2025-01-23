@@ -17,9 +17,10 @@ public class BLCatalog(ProductRepository productRepository, PartRepository partR
 {
     public async Task<Product?> CreateProduct(int model, string name, int price, string description, string image, List<Tuple<int, int>>? parts_list = null)
     {
+        parts_list ??= new List<Tuple<int, int>>();
         var product = await productRepository.Add(model, name, price, description, image);
 
-        if (product != null && parts_list != null)
+        if (product != null)
         {
             foreach (var part in parts_list)
             {
@@ -83,11 +84,6 @@ public class BLCatalog(ProductRepository productRepository, PartRepository partR
     public async Task<ProductPart?> GetProductPart(int partId, int productId)
     {
         return await productPartRepository.FindProductPart(partId, productId);
-    }
-
-    public async Task<List<ProductPart>> GetAllProductParts()
-    {
-        return await productPartRepository.FindAllProductParts();
     }
 
     public async Task UpdateProductPart(ProductPart productPart)
