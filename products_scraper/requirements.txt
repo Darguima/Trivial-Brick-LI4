@@ -1,0 +1,4 @@
+PyMuPDF==1.25.2
+pillow==11.1.0
+beautifulsoup4==4.12.3
+requests
