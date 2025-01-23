@@ -21,6 +21,8 @@ builder.Services.AddTransient<ClientRepository>();
 builder.Services.AddTransient<AssemblyLineRepository>();
 builder.Services.AddTransient<ProductRepository>();
 builder.Services.AddTransient<OrderRepository>();
+builder.Services.AddTransient<PartRepository>();
+builder.Services.AddTransient<ProductPartRepository>();
 
 // BusinessLayer-related services
 builder.Services.AddTransient<BLClients>();
