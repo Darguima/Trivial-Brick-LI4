@@ -56,7 +56,7 @@ public class BLCatalog(ProductRepository productRepository, PartRepository partR
         await productRepository.Remove(product);
     }
 
-    public async Task<Part?> CreatePart(int partId, string? image, int stock)
+    public async Task<Part?> CreatePart(int partId, string image, int stock)
     {
         return await partRepository.AddPart(partId, image, stock);
     }
