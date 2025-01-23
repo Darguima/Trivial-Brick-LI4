@@ -69,4 +69,10 @@ public class BLAssemblyLines(AssemblyLineRepository assemblyLineRepository, BLOr
        
     }
 
+    public async Task DesalocateAssemblyLine (AssemblyLine assemblyLine) 
+    {
+        assemblyLine.Order_id = null;
+        await assemblyLineRepository.Update(assemblyLine);
+    }
+
 }
