@@ -24,6 +24,7 @@ public class BLOrders(OrderRepository orderRepository, NotificationRepository no
                 await CreateNotification("Order queued for assembly line", date , client_id, order.Order_id);
             }
 
+
             return order;
         }
 
