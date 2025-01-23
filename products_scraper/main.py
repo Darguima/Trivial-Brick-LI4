@@ -83,17 +83,12 @@ for page_num, page in enumerate(doc):
 
     pix = page.get_pixmap()
     pix.save(instruction_img_path)
-    text = page.get_text()
-    print(text)
 
     product["instructions"].append({
         "qnt_parts": randint(1, 5),
         "image": instruction_img_name
     })
 
-    if page_num > 5:
-        ...
-        break
 print("\n====================================================\n")
 # ======================================================
 
@@ -104,8 +99,6 @@ with open(parts_path, mode='r', newline='', encoding='utf-8') as file:
 
     next(csv_reader)
     
-    # Iterate over rows in the CSV
-    i = 0
     for row in csv_reader:
         # Append a tuple of (first_column, ninth_column) to the list
         part_id = row[0]
@@ -135,10 +128,6 @@ with open(parts_path, mode='r', newline='', encoding='utf-8') as file:
             "img": part_img_name 
         })
         
-        i += 1
-        if i > 2:
-            ...
-            break
 print("\n====================================================\n")
 # ======================================================
 
