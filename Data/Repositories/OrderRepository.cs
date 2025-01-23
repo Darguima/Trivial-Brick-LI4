@@ -42,7 +42,16 @@ namespace TrivialBrick.Data.Repositories
         public Task Update(Order order)
         {
             string sql = "update orders set Address = @Address, State = @State, Product_id = @Product_id, Client_id = @Client_id, Price = @Price, Date = @Date where Order_id = @Order_id";
-            return _db.SaveData(sql, order);
+            return _db.SaveData(sql, new
+            {
+                order.Address,
+                State = order.State.ToString(),
+                order.Product_id,
+                order.Client_id,
+                order.Price,
+                order.Date,
+                order.Order_id
+            });
         }
 
         public Task Remove(Order order)

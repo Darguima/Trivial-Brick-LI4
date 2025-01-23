@@ -12,15 +12,16 @@ This business layer is responsible by:
 
 */
 
-public class BLOrders(OrderRepository orderRepository, InvoiceRepository invoiceRepository)
+public class BLOrders(OrderRepository orderRepository, NotificationRepository notificationRepository, InvoiceRepository invoiceRepository)
 {
-      public async Task<Order?> CreateOrder(string address, OrderState state, int product_id, int client_id, decimal price, DateTime date)
+    public async Task<Order?> CreateOrder(string address, OrderState state, int product_id, int client_id, decimal price, DateTime date)
         {
             var order = await orderRepository.Add(address, state, product_id, client_id, price, date);
 
             if (order != null)
             {
                 await CreateInvoice(DateTime.Now, client_id, order.Order_id);
+                await CreateNotification("Order queued for assembly line", date , client_id, order.Order_id);
             }
 
             return order;
@@ -69,5 +70,30 @@ public class BLOrders(OrderRepository orderRepository, InvoiceRepository invoice
     public async Task DeleteInvoice(Invoice invoice)
     {
         await invoiceRepository.Remove(invoice);
+    }
+    
+    public async Task<Notification?> CreateNotification(string message, DateTime datetime, int client_id, int order_id)
+    {
+        return await notificationRepository.Add(message, datetime, client_id, order_id);
+    }
+
+    public async Task<Notification?> GetNotification(int id)
+    {
+        return await notificationRepository.Find(id);
+    }
+
+    public async Task<List<Notification>> GetAllNotifications()
+    {
+        return await notificationRepository.FindAll();
+    }
+
+    public async Task UpdateNotification(Notification notification)
+    {
+        await notificationRepository.Update(notification);
+    }
+
+    public async Task DeleteNotification(Notification notification)
+    {
+        await notificationRepository.Remove(notification);
     }
 }
