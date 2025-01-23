@@ -90,6 +90,7 @@ CREATE TABLE assembly_lines (
     assembly_line_id INT PRIMARY KEY,
     state VARCHAR(20) NOT NULL CHECK (state IN ('active', 'inactive')),
     order_id INT,
+    datetime DATETIME,
     FOREIGN KEY (order_id) REFERENCES orders(order_id) ON DELETE SET NULL
 );
 
