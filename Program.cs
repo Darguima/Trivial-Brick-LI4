@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Components.Authorization;
 using TrivialBrick.Authentication;
 
-using TrivialBrick.Components;
+using TrivialBrick.UI;
 using TrivialBrick.Business;
 using TrivialBrick.Data;
 using TrivialBrick.Data.Repositories;

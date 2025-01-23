@@ -1,0 +1,16 @@
+<div class="container">
+  <h3>@Name</h3>
+  <p>@Price</p>
+  <img src="@Image" alt="Product Image" style="width: 100px; height: 100px;" />
+</div>
+
+@code {
+  [Parameter]
+  public string Name { get; set; } = "Product Template";
+
+  [Parameter]
+  public int Price { get; set; } = 100;
+
+  [Parameter]
+  public string Image { get; set; } = "https://i5.walmartimages.com/asr/ab38513e-cddb-4319-910f-acbb28689602_1.dace00136ca6fcaa6e041641af0a0d8c.jpeg";
+}
