@@ -15,9 +15,16 @@ This business layer is responsible by:
 public class BLOrders(OrderRepository orderRepository, NotificationRepository notificationRepository)
 {
     public async Task<Order?> CreateOrder(string address, OrderState state, int product_id, int client_id, decimal price, DateTime date)
-    {
-        return await orderRepository.Add(address, state, product_id, client_id, price, date);
-    }
+        {
+            var order = await orderRepository.Add(address, state, product_id, client_id, price, date);
+
+            if (order != null)
+            {
+                await CreateNotification("Order queued for assembly line", date , client_id, order.Order_id);
+            }
+
+            return order;
+        }
 
     public async Task<Order?> GetOrder(int id)
     {
