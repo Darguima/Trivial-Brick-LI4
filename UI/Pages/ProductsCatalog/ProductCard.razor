@@ -1,7 +1,16 @@
 <div class="container">
-  <h3>@Name</h3>
-  <p>@Price</p>
-  <img src="@Image" alt="Product Image" style="width: 100px; height: 100px;" />
+  <img src="@Image" alt="Product Image" />
+
+  <h3 class="name">@Name</h3>
+
+  <p class="price">@Price <img src="/images/lego_coin.png" alt="Lego Coin" ></p>
+
+  @if (!HaveStock)
+  {
+    <div class="out-of-stock-container">
+      <span>Out of Stock</span>
+    </div>
+  }
 </div>
 
 @code {
@@ -12,5 +21,8 @@
   public int Price { get; set; } = 100;
 
   [Parameter]
-  public string Image { get; set; } = "https://i5.walmartimages.com/asr/ab38513e-cddb-4319-910f-acbb28689602_1.dace00136ca6fcaa6e041641af0a0d8c.jpeg";
+  public required string Image { get; set; }
+
+  [Parameter]
+  public bool HaveStock { get; set; } = true;
 }
