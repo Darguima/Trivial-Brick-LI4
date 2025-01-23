@@ -57,6 +57,7 @@
             @foreach (var prod in products)
             {
                 <li>
+                    <ProductCard Name="@prod.Name" />
                     @prod.Name - @prod.Price
                     <button class="btn btn-warning ml-2" @onclick="() => ShowEditModal(prod)">Edit</button>
                     <button class="btn btn-danger ml-2" @onclick="() => DeleteProduct(prod)">Delete</button>
