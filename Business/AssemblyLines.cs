@@ -11,7 +11,7 @@ This business layer is responsible by:
 
 */
 
-public class BLAssemblyLines(AssemblyLineRepository assemblyLineRepository, BLOrders ordersBL, NotificationRepository notificationRepository)
+public class BLAssemblyLines(AssemblyLineRepository assemblyLineRepository, BLOrders ordersBL)
 {
     public async Task<AssemblyLine?> CreateAssemblyLine(string id)
     {
@@ -46,13 +46,14 @@ public class BLAssemblyLines(AssemblyLineRepository assemblyLineRepository, BLOr
     {
         var freeLines = await assemblyLineRepository.FindAllActiveAndFree();
 
-        
+        if (freeLines!=null && freeLines.Count > 0) {
             var firstFreeLine = freeLines.First();
             firstFreeLine.Order_id = order.Order_id;
             await assemblyLineRepository.Update(firstFreeLine);
             order.State = OrderState.Assembly_line;
             await ordersBL.UpdateOrder(order);
-            await notificationRepository.Add("Your order is now being processed.", DateTime.Now, order.Client_id, order.Order_id);
+            await ordersBL.CreateNotification("Order queued for assembly line", DateTime.Now, order.Client_id, order.Order_id);
+        }
             
         
 
@@ -61,18 +62,16 @@ public class BLAssemblyLines(AssemblyLineRepository assemblyLineRepository, BLOr
     public async Task TryAlocateOrdersToFreeAssemblyLines()
     {
        var pendingOrders = await ordersBL.FindAllPendingOrders();
+
+        if (pendingOrders!= null) {
        
            foreach (var order in pendingOrders)
            {
                await TryAllocateOrderToAssemblyLine(order);
            }
-       
-    }
 
-    public async Task DesalocateAssemblyLine (AssemblyLine assemblyLine) 
-    {
-        assemblyLine.Order_id = null;
-        await assemblyLineRepository.Update(assemblyLine);
+        }
+       
     }
 
 }
