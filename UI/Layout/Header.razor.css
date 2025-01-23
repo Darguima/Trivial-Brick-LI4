@@ -8,6 +8,8 @@ header {
 
     background: rgb(141, 96, 15);
     background: linear-gradient(90deg, rgba(141, 96, 15, 1) 0%, rgba(192, 131, 21, 1) 15%, rgba(243, 165, 27, 1) 50%, rgba(192, 131, 21, 1) 85%, rgba(141, 96, 15, 1) 100%);
+
+    border-bottom: 4px solid #E24800;
 }
 
 .header-option {
