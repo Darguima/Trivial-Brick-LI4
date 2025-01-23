@@ -14,10 +14,17 @@ This business layer is responsible by:
 
 public class BLOrders(OrderRepository orderRepository, InvoiceRepository invoiceRepository)
 {
-    public async Task<Order?> CreateOrder(string address, OrderState state, int product_id, int client_id, decimal price, DateTime date)
-    {
-        return await orderRepository.Add(address, state, product_id, client_id, price, date);
-    }
+      public async Task<Order?> CreateOrder(string address, OrderState state, int product_id, int client_id, decimal price, DateTime date)
+        {
+            var order = await orderRepository.Add(address, state, product_id, client_id, price, date);
+
+            if (order != null)
+            {
+                await CreateInvoice(DateTime.Now, client_id, order.Order_id);
+            }
+
+            return order;
+        }
 
     public async Task<Order?> GetOrder(int id)
     {
