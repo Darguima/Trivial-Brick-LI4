@@ -6,8 +6,8 @@ namespace TrivialBrick.Business;
 /*
 This business layer is responsible by:
 
-- orders -> Done
-- invoices -> Done
+- orders
+- invoices
 - notifications
 
 */
