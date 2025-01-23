@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Components.Authorization;
 using TrivialBrick.Authentication;
 
-using TrivialBrick.Components;
+using TrivialBrick.UI;
 using TrivialBrick.Business;
 using TrivialBrick.Data;
 using TrivialBrick.Data.Repositories;
@@ -23,6 +23,8 @@ builder.Services.AddTransient<ProductRepository>();
 builder.Services.AddTransient<OrderRepository>();
 builder.Services.AddTransient<PartRepository>();
 builder.Services.AddTransient<ProductPartRepository>();
+builder.Services.AddTransient<InvoiceRepository>();
+builder.Services.AddTransient<NotificationRepository>();
 
 // BusinessLayer-related services
 builder.Services.AddTransient<BLClients>();
