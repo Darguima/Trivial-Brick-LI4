@@ -24,7 +24,7 @@ namespace TrivialBrick.Data.Repositories
             return _db.LoadData<Part, dynamic>(sql, new { });
         }
 
-        public async Task<Part> AddPart(int partId, string? image, int stock)
+        public async Task<Part> AddPart(int partId, string image, int stock)
         {
             string sql = @"
                 insert into parts (part_id, image, stock) 

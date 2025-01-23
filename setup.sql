@@ -38,7 +38,7 @@ CREATE TABLE products (
 -- Creating the Part table
 CREATE TABLE parts (
     part_id INT PRIMARY KEY,
-    image VARCHAR(255),
+    image VARCHAR(255) NOT NULL,
     stock INT NOT NULL,
 );
 
