@@ -37,5 +37,11 @@ namespace TrivialBrick.Data.Repositories
             string sql = "delete from assembly_lines where assembly_line_id = @ID";
             return _db.SaveData(sql, new { ID = assemblyLine.Assembly_line_id });
         }
+
+        public async Task<List<AssemblyLine>> FindAllActiveAndFree()
+        {
+            string sql = "select * from assembly_lines where state = 'Active' and order_id is null";
+            return await _db.LoadData<AssemblyLine, dynamic>(sql, new { });
+        }
     }
 }
