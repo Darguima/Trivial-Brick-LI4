@@ -1,0 +1,51 @@
+@inject BLOrders _orders
+@rendermode InteractiveServer
+
+<div class="notification-container" style="display: @(showNotifications ? "block" : "none")">
+    <div class="notification-header">
+        <h4>Notifications</h4>
+        <button class="close-button" @onclick="ToggleNotifications">X</button>
+    </div>
+    <ul class="list-group">
+        @if (notifications != null && notifications.Count > 0)
+        {
+             @foreach (var notif in notifications.OrderByDescending(n => n.Datetime))
+            {
+                <li class="list-group-item">@notif.Notification_id - @notif.Message - @notif.Datetime - @notif.Client_id - @notif.Order_id</li>
+            }
+        }
+        else
+        {
+            <li class="list-group-item">No notifications available.</li>
+        }
+    </ul>
+</div>
+
+@code {
+    private List<Notification>? notifications;
+    private bool showNotifications = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadNotifications();
+    }
+
+    private async Task LoadNotifications()
+    {
+        try
+        {
+            notifications = await _orders.GetAllNotifications();
+            
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading notifications: {ex.Message}");
+        }
+    }
+
+    public void ToggleNotifications()
+    {
+        showNotifications = !showNotifications;
+        StateHasChanged(); // Ensure the UI is updated
+    }
+}   

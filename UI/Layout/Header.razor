@@ -1,4 +1,6 @@
-﻿<header>
+﻿@rendermode InteractiveServer
+
+<header>
     <div class="header-option">
         <NavLink class="nav-link" href="/">
             <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true">Home</span>
@@ -48,8 +50,27 @@
     </div>
 
     <div class="header-option">
-        <NavLink class="nav-link" href="/notifications">
-            <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true">Notifications</span>
-        </NavLink>
-    </div>
+    <button class="nav-link notification-button" @onclick="ToggleNotifications">
+        <span class="bi bi-bell-fill" aria-hidden="true"></span>
+    </button>
+</div>
+
 </header>
+
+<TrivialBrick.UI.Pages.Notifications.NotificationComponent @ref="notificationComponent" />
+
+@code {
+    private TrivialBrick.UI.Pages.Notifications.NotificationComponent? notificationComponent;
+
+    private void ToggleNotifications()
+    {
+        if (notificationComponent != null)
+        {
+            notificationComponent.ToggleNotifications();
+        }
+        else
+        {
+            
+        }
+    }
+}

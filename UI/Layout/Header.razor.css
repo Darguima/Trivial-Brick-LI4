@@ -30,3 +30,33 @@ header {
     color: black;
     font-size: 1.5em;
 }
+
+.header-option .nav-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #FA812F; /* Igual aos outros */
+    height: 100%; /* Ocupa toda a altura do container */
+    width: 100%; /* Ocupa toda a largura do container */
+    border-radius: 10px; /* Bordas arredondadas */
+    border: 1px solid black; /* Mesma borda dos outros */
+    cursor: pointer; /* Torna clicável */
+    font-size: 1.5em; /* Ajusta o tamanho */
+    color: black;
+}
+
+.header-option .nav-link:hover {
+    background-color: #ff9933; /* Efeito hover */
+}
+
+
+.nav-link.notification-button span {
+    color: black; /* Cor do texto consistente */
+    font-size: 1.5em; /* Tamanho do texto */
+}
+
+
+.nav-link.notification-button::before,
+.nav-link.notification-button::after {
+    content: none; /* Garante que nenhum elemento adicional seja gerado */
+}
