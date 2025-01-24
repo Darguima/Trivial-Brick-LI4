@@ -64,7 +64,7 @@ public class BLAssemblyLines(AssemblyLineRepository assemblyLineRepository, BLOr
             var date = DateTime.Now;
             firstFreeLine.Mount_start_time= date;
             var amount_of_pieces = await catalogBL.GetProductPartsCount(order.Product_id);
-            firstFreeLine.Expected_end_time = date.AddSeconds(25);
+            firstFreeLine.Expected_end_time = date.AddSeconds(amount_of_pieces);
             await assemblyLineRepository.Update(firstFreeLine);
             order.State = OrderState.Assembly_line;
             await ordersBL.UpdateOrder(order);

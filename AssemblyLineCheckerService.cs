@@ -17,7 +17,7 @@ public class AssemblyLineCheckerService : IHostedService, IDisposable
     public Task StartAsync(CancellationToken cancellationToken)
     {
         Console.WriteLine("AssemblyLineCheckerService is starting.");
-        _timer = new Timer(CheckAssemblyLines, null, TimeSpan.Zero, TimeSpan.FromSeconds(5)); // Verify every 5 seconds
+        _timer = new Timer(CheckAssemblyLines, null, TimeSpan.Zero, TimeSpan.FromSeconds(1)); // Verify every 1 second
         return Task.CompletedTask;
     }
 
