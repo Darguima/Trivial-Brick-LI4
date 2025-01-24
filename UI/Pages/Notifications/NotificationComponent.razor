@@ -9,9 +9,15 @@
     <ul class="list-group">
         @if (notifications != null && notifications.Count > 0)
         {
-             @foreach (var notif in notifications.OrderByDescending(n => n.Datetime))
+            @foreach (var notif in notifications.OrderByDescending(n => n.Datetime))
             {
-                <li class="list-group-item">@notif.Notification_id - @notif.Message - @notif.Datetime - @notif.Client_id - @notif.Order_id</li>
+                <li class="list-group-item">
+                    <span class="time">@notif.Datetime.ToString("HH:mm")</span> - 
+                    <span class="message">@notif.Message</span> - 
+                    <span class="client-id">Client ID: @notif.Client_id</span> - 
+                    <span class="order-id">Order ID: @notif.Order_id</span> - 
+                    <span class="notification-id">Notification ID: @notif.Notification_id</span>
+                </li>
             }
         }
         else
@@ -35,7 +41,6 @@
         try
         {
             notifications = await _orders.GetAllNotifications();
-            
         }
         catch (Exception ex)
         {
@@ -48,4 +53,4 @@
         showNotifications = !showNotifications;
         StateHasChanged(); // Ensure the UI is updated
     }
-}   
+}
