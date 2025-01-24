@@ -11,7 +11,7 @@ This business layer is responsible by:
 
 */
 
-public class BLAssemblyLines(AssemblyLineRepository assemblyLineRepository, BLOrders ordersBL)
+public class BLAssemblyLines(AssemblyLineRepository assemblyLineRepository, BLOrders ordersBL, BLCatalog catalogBL)
 {
     public async Task<AssemblyLine?> CreateAssemblyLine(string id)
     {
@@ -23,6 +23,12 @@ public class BLAssemblyLines(AssemblyLineRepository assemblyLineRepository, BLOr
         return await assemblyLineRepository.Find(id);
     }
 
+      public async Task<List<AssemblyLine>> GetOcupiedAssemblyLines()
+    {
+        var list = await assemblyLineRepository.FindAllOcupied();
+        return list;
+    }
+
     public async Task<List<AssemblyLine>> GetAllAssemblyLines()
     {
         return await assemblyLineRepository.FindAll();
@@ -30,6 +36,12 @@ public class BLAssemblyLines(AssemblyLineRepository assemblyLineRepository, BLOr
 
     public async Task UpdateAssemblyLine(AssemblyLine assemblyLine)
     {
+        // if new state is inactive and there is a product, dont update 
+        if (assemblyLine.State == AssemblyLineState.Inactive && assemblyLine.Order_id != null)
+        {
+            return;
+        }
+
         await assemblyLineRepository.Update(assemblyLine);
         if (assemblyLine.State == AssemblyLineState.Active)
         {
@@ -49,10 +61,14 @@ public class BLAssemblyLines(AssemblyLineRepository assemblyLineRepository, BLOr
         if (freeLines!=null && freeLines.Count > 0) {
             var firstFreeLine = freeLines.First();
             firstFreeLine.Order_id = order.Order_id;
+            var date = DateTime.Now;
+            firstFreeLine.Mount_start_time= date;
+            var amount_of_pieces = await catalogBL.GetProductPartsCount(order.Product_id);
+            firstFreeLine.Expected_end_time = date.AddSeconds(25);
             await assemblyLineRepository.Update(firstFreeLine);
             order.State = OrderState.Assembly_line;
             await ordersBL.UpdateOrder(order);
-            await ordersBL.CreateNotification("Order queued for assembly line", DateTime.Now, order.Client_id, order.Order_id);
+            await ordersBL.CreateNotification("Your order is now being processed.", DateTime.Now, order.Client_id, order.Order_id);
         }
             
         
@@ -74,9 +90,22 @@ public class BLAssemblyLines(AssemblyLineRepository assemblyLineRepository, BLOr
        
     }
 
-    public async Task DesalocateAssemblyLine (AssemblyLine assemblyLine)
+     public async Task DesalocateAssemblyLine(AssemblyLine assemblyLine)
     {
+        if (assemblyLine.Order_id != null)
+        {
+            var order = await ordersBL.GetOrder(assemblyLine.Order_id.Value);
+            if (order != null)
+            {
+                await ordersBL.CreateNotification("Order is ready", DateTime.Now, order.Client_id, order.Order_id);
+                order.State = OrderState.Finished;
+                await ordersBL.UpdateOrder(order);
+            }
+        }
+
         assemblyLine.Order_id = null;
+        assemblyLine.Mount_start_time = null;
+        assemblyLine.Expected_end_time = null;
         await assemblyLineRepository.Update(assemblyLine);
     }
 

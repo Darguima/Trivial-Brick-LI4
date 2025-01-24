@@ -33,6 +33,12 @@ builder.Services.AddTransient<BLAssemblyLines>();
 builder.Services.AddTransient<BLCatalog>();
 builder.Services.AddTransient<BLOrders>();
 
+builder.Services.AddHostedService<AssemblyLineCheckerService>(provider =>
+{
+    var assemblyLineBL = provider.GetRequiredService<BLAssemblyLines>();
+    return new AssemblyLineCheckerService(assemblyLineBL);
+});
+
 // App
 var app = builder.Build();
 
@@ -48,4 +54,6 @@ app.UseAntiforgery();
 app.MapRazorComponents<App>().AddInteractiveServerRenderMode();
 
 app.Run();
+
+
 

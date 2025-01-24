@@ -2,9 +2,14 @@ using TrivialBrick.Data.Models;
 
 namespace TrivialBrick.Data.Repositories
 {
-    public class AssemblyLineRepository(ISqlDataAccess db)
+    public class AssemblyLineRepository
     {
-        private readonly ISqlDataAccess _db = db;
+        private readonly ISqlDataAccess _db;
+
+        public AssemblyLineRepository(ISqlDataAccess db)
+        {
+            _db = db;
+        }
 
         public async Task<AssemblyLine?> Find(string id)
         {
@@ -19,18 +24,26 @@ namespace TrivialBrick.Data.Repositories
             return _db.LoadData<AssemblyLine, dynamic>(sql, new { });
         }
 
-        public async Task<AssemblyLine> Add(string ID, AssemblyLineState state = AssemblyLineState.Inactive, int? orderId = null)
+        public async Task<AssemblyLine> Add(string ID, AssemblyLineState state = AssemblyLineState.Inactive, int? orderId = null, DateTime? startMountTime = null, DateTime? endMountTime = null)
         {
-            string sql = "insert into assembly_lines (assembly_line_id, state, order_id) values (@ID, @State, @OrderId)";
-            await _db.SaveData(sql, new { ID, State = state.ToString(), OrderId = orderId });
-            return new AssemblyLine { Assembly_line_id = ID, State = state, Order_id = orderId };
+            Console.WriteLine($"Adding AssemblyLine {ID}: state = {state}, order_id = {orderId}, start_mount_time = {startMountTime}, end_mount_time = {endMountTime}");
+            string sql = "insert into assembly_lines (assembly_line_id, state, order_id, mount_start_time, expected_end_time) values (@ID, @State, @OrderId, @StartMountTime, @EndMountTime)";
+            await _db.SaveData(sql, new { ID, State = state.ToString(), OrderId = orderId, StartMountTime = startMountTime, EndMountTime = endMountTime });
+            return new AssemblyLine { Assembly_line_id = ID, State = state, Order_id = orderId, Mount_start_time = startMountTime, Expected_end_time = endMountTime };
         }
 
         public Task Update(AssemblyLine assemblyLine)
         {
-            string sql = "update assembly_lines set state = @State, order_id = @OrderId where assembly_line_id = @ID";
-            return _db.SaveData(sql, new { ID = assemblyLine.Assembly_line_id, State = assemblyLine.State.ToString(), OrderId = assemblyLine.Order_id });
-        }
+            string sql = "update assembly_lines set state = @State, order_id = @OrderId, mount_start_time = @StartMountTime, expected_end_time = @EndMountTime where assembly_line_id = @ID";
+            return _db.SaveData(sql, new
+            {
+                ID = assemblyLine.Assembly_line_id,
+                State = assemblyLine.State.ToString(),
+                OrderId = assemblyLine.Order_id,
+                StartMountTime = assemblyLine.Mount_start_time,
+                EndMountTime = assemblyLine.Expected_end_time
+            });
+        }   
 
         public Task Remove(AssemblyLine assemblyLine)
         {
@@ -40,7 +53,13 @@ namespace TrivialBrick.Data.Repositories
 
         public async Task<List<AssemblyLine>> FindAllActiveAndFree()
         {
-            string sql = "select * from assembly_lines where state = 'Active' and order_id is null";
+            string sql = "select * from assembly_lines where state = 'active' and order_id is null";
+            return await _db.LoadData<AssemblyLine, dynamic>(sql, new { });
+        }
+
+        public async Task<List<AssemblyLine>> FindAllOcupied()
+        {
+            string sql = "select * from assembly_lines where order_id is not null";
             return await _db.LoadData<AssemblyLine, dynamic>(sql, new { });
         }
     }
