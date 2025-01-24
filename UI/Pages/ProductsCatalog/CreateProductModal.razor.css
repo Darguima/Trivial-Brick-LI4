@@ -14,5 +14,6 @@
 
 .modal-actions {
   display: flex;
+  gap: 16px;
   justify-content: center;
 }
