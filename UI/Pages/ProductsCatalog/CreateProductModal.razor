@@ -1,0 +1,46 @@
+<Modal>
+  <div class="container">
+
+    <form class="form">
+      <div class="form-group">
+        <label for="name">Name</label>
+        <input type="text" class="form-control" id="name" placeholder="Enter product name">
+      </div>
+
+      <div class="form-group">
+        <label for="model">Model ID</label>
+        <input type="text" class="form-control" id="model" placeholder="Enter product model id">
+      </div>
+
+      <div class="form-group">
+        <label for="price">Price</label>
+        <input type="number" class="form-control" id="price" placeholder="Enter product price">
+      </div>
+
+      <div class="form-group">
+        <label for="image">Image</label>
+        <div class="drop-zone">
+          <input type="file" class="form-control" id="image">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="instructions">Instructions ZIP</label>
+        <div class="drop-zone">
+          <input type="file" class="form-control" id="instructions">
+        </div>
+      </div>
+
+    </form>
+
+    <div class="modal-actions">
+      <button type="button" class="btn-primary" @onclick="ToggleModal">Close</button>
+    </div>
+  </div>
+
+</Modal>
+
+@code {
+  [Parameter]
+  public EventCallback ToggleModal { get; set; }
+}
