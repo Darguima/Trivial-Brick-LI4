@@ -1,5 +1,5 @@
 .assembly-line-card {
-    border: 1px solid #ddd;
+    border: 1px solid #000;
     padding: 10px;
     background-color: #F59B5E;
 }
@@ -11,6 +11,7 @@ h5 {
 p {
     color: #555;
 }
+
 
 .backdrop {
     position: fixed;

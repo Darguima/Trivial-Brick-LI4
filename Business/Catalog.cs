@@ -123,4 +123,16 @@ public class BLCatalog(ProductRepository productRepository, PartRepository partR
     {
         await instructionRepository.RemoveInstruction(instruction);
     }
+    public async Task<int> GetProductPartsCount(int productId)
+    {
+        var productParts = await productPartRepository.FindAllProductPartsByProduct(productId);
+        if (productParts != null)
+        {
+            return productParts.Count;
+        }
+        else
+        {
+            throw new Exception("No parts found for this product");
+        }
+    }
 }
