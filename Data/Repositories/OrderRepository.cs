@@ -59,5 +59,11 @@ namespace TrivialBrick.Data.Repositories
             string sql = "delete from orders where Order_id = @Order_id";
             return _db.SaveData(sql, order);
         }
+
+        public Task<List<Order>> FindAllPendingOrders()
+        {
+            string sql = "select * from orders where State = 'Wait_line' order by Order_id";
+            return _db.LoadData<Order, dynamic>(sql, new { });
+        }
     }
 }

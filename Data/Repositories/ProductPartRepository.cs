@@ -53,5 +53,11 @@ namespace TrivialBrick.Data.Repositories
             string sql = "delete from products_parts where part_id = @Part_id and product_id = @Product_id";
             return _db.SaveData(sql, productPart);
         }
+
+        public async Task<List<ProductPart>> FindAllProductPartsByProduct(int productId)
+        {
+            string sql = "select * from products_parts where product_id = @productId";
+            return await _db.LoadData<ProductPart, dynamic>(sql, new { productId });
+        }
     }
 }
