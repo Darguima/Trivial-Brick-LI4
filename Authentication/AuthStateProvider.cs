@@ -29,7 +29,7 @@ public class AuthStateProvider : AuthenticationStateProvider
             claimsPrincipal = _anonymous;
         }
 
-        
+
         NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(claimsPrincipal)));
     }
 
@@ -44,17 +44,17 @@ public class AuthStateProvider : AuthenticationStateProvider
         var identity = new ClaimsIdentity(claims, "Auth");
         return new ClaimsPrincipal(identity);
     }
-    
+
     public override async Task<AuthenticationState> GetAuthenticationStateAsync()
     {
         try
         {
-            
+
             var userSession = await GetUserSession();
 
             if (userSession == null)
             {
-                
+
                 return new AuthenticationState(_anonymous);
             }
 
@@ -63,13 +63,13 @@ public class AuthStateProvider : AuthenticationStateProvider
         }
         catch (Exception ex)
         {
-           
+
             Console.WriteLine($"Erro ao obter o estado de autenticação: {ex.Message}");
             return new AuthenticationState(_anonymous);
         }
     }
 
-    
+
     public async Task Login(User user, bool isAdmin)
     {
         var userSession = new UserSession
@@ -81,19 +81,19 @@ public class AuthStateProvider : AuthenticationStateProvider
         await UpdateAuthenticationState(userSession);
     }
 
-    
+
     public async Task Logout()
     {
         await UpdateAuthenticationState(null);
     }
 
-    
+
     public async Task<UserSession?> GetUserSession()
     {
         var userSessionResult = await _sessionStorage.GetAsync<UserSession>("UserSession");
         var userSession = userSessionResult.Success ? userSessionResult.Value : null;
 
-        
+
         return userSession;
     }
 }
