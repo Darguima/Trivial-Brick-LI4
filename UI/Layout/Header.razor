@@ -3,7 +3,6 @@
 <header>
     @if (IsAuthenticated)
     {
-        <!-- Menu para usuários autenticados -->
         <div class="header-option">
             <NavLink class="nav-link" href="/">
                 <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true">Home</span>
@@ -56,7 +55,7 @@
     }
     else
     {
-        <!-- Menu para usuários não autenticados -->
+
         <div class="header-option">
             <NavLink class="nav-link" href="/login">
                 <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true">Login</span>
