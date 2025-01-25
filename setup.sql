@@ -70,7 +70,7 @@ CREATE TABLE orders (
     product_id INT NOT NULL,
     client_id INT NOT NULL,
     price DECIMAL(7,2) NOT NULL,
-    date DATE NOT NULL,
+    date DATETIME NOT NULL,
     FOREIGN KEY (product_id) REFERENCES products(model) ON DELETE NO ACTION,
     FOREIGN KEY (client_id) REFERENCES clients(user_id) ON DELETE NO ACTION
 );
@@ -90,6 +90,8 @@ CREATE TABLE assembly_lines (
     assembly_line_id INT PRIMARY KEY,
     state VARCHAR(20) NOT NULL CHECK (state IN ('active', 'inactive')),
     order_id INT,
+    mount_start_time DATETIME,
+    expected_end_time DATETIME,
     FOREIGN KEY (order_id) REFERENCES orders(order_id) ON DELETE SET NULL
 );
 
