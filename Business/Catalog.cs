@@ -15,7 +15,7 @@ This business layer is responsible by:
 
 public class BLCatalog(ProductRepository productRepository, PartRepository partRepository, ProductPartRepository productPartRepository, InstructionRepository instructionRepository)
 {
-    public async Task<Product?> CreateProduct(int model, string name, int price, string description, string image, List<Tuple<int, int>>? parts_list = null, List<Tuple<string, int>>? instructions = null)
+    public async Task<Product?> CreateProduct(int model, string name, decimal price, string description, string image, List<Tuple<int, int>>? parts_list = null, List<Tuple<string, int>>? instructions = null)
     {
         parts_list ??= [];
         instructions ??= [];

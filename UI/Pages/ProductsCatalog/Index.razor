@@ -10,9 +10,11 @@
 else
 {
     <div class="actions-container">
-        <button class="btn btn-primary">Filter by Price</button>
-        <button class="btn btn-primary">Filter by Name</button>
-    </div>
+    <button class="btn btn-primary" @onclick="ToggleCreateProductModal">
+        Add Product
+    </button>
+</div>
+
     <div class="products-container">
     @foreach (var prod in products)
         {
@@ -22,11 +24,22 @@ else
     </div>
 }
 
+@if (showCreateProductModal)
+{
+    <CreateProductModal ToggleModal="ToggleCreateProductModal" />
+}
+
 @code {
     private List<Product>? products;
+    private bool showCreateProductModal = false;
 
     protected override async Task OnInitializedAsync()
     {
         products = await _catalogs.GetAllProducts();
+    }
+
+    private void ToggleCreateProductModal()
+    {
+        showCreateProductModal = !showCreateProductModal;
     }
 }
