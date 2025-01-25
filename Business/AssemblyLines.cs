@@ -25,7 +25,7 @@ public class BLAssemblyLines
         // Call the method to allocate orders to free assembly lines
         _ = TryAllocateOrdersToFreeAssemblyLines();
     }
-    
+
     public async Task<AssemblyLine?> CreateAssemblyLine(string id)
     {
         var line = await assemblyLineRepository.Add(id);
