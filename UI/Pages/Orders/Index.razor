@@ -147,6 +147,11 @@
         {
             date = DateTime.Now; // Reset the date to the current date and time
             order = await _orders.CreateOrder(address, state, productId, clientId, price, date);
+            if (order != null)
+            {
+                // This should be done by the BL, but as a workaround, we'll do it here
+                await _assembly_lines.TryAllocateOrderToAssemblyLine(order);
+            }
             orders = null; // Clear the list to avoid confusion
             errorMessage = null; // Clear any previous error message
         }
