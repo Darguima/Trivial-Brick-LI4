@@ -1,0 +1,23 @@
+<div class="blur">
+</div>
+
+<div class="modal show d-block" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content modal-trivial-background">
+      @if (ChildContent != null)
+      {
+        @ChildContent
+      }
+      else
+      {
+        <span>Empty Modal</span>
+      }
+
+    </div>
+  </div>
+</div>
+
+@code {
+  [Parameter]
+  public RenderFragment ChildContent { get; set; } = null;
+}
