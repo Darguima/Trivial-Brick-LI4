@@ -58,7 +58,7 @@
 @if (order != null)
 {
     <div class="alert alert-success mt-3">
-        <strong>Order:</strong> @order.Order_id - @order.Address - @order.State - @order.Product_id - @order.Client_id - @order.Price - @order.Date.ToString("dd-MM-yyyy")
+        <strong>Order:</strong> @order.Order_id - @order.Address - @order.State - @order.Product_id - @order.Client_id - @order.Price - @order.Date.ToString("dd-MM-yyyy HH:mm:ss")
         <button class="btn btn-warning ml-2" @onclick="() => ShowEditModal(order)">Edit</button>
         @if (order.State == OrderState.Finished)
         {
@@ -75,7 +75,7 @@
             @foreach (var ord in orders)
             {
                 <li class="list-group-item">
-                    @ord.Order_id - @ord.Address - @ord.State - @ord.Product_id - @ord.Client_id - @ord.Price - @ord.Date.ToString("dd-MM-yyyy")
+                    @ord.Order_id - @ord.Address - @ord.State - @ord.Product_id - @ord.Client_id - @ord.Price - @ord.Date.ToString("dd-MM-yyyy HH:mm:ss")
                     <button class="btn btn-warning ml-2" @onclick="() => ShowEditModal(ord)">Edit</button>
                     @if (ord.State == OrderState.Finished)
                     {
@@ -131,6 +131,7 @@
     private int clientId;
     private decimal price;
     private DateTime date = DateTime.Now;
+    private string dateString = DateTime.Now.ToString("yyyy-MM-ddTHH:mm");
     private Order? order;
     private List<Order>? orders;
     private string? errorMessage;
@@ -144,7 +145,13 @@
     {
         try
         {
+            date = DateTime.Now; // Reset the date to the current date and time
             order = await _orders.CreateOrder(address, state, productId, clientId, price, date);
+            if (order != null)
+            {
+                // This should be done by the BL, but as a workaround, we'll do it here
+                await _assembly_lines.TryAllocateOrderToAssemblyLine(order);
+            }
             orders = null; // Clear the list to avoid confusion
             errorMessage = null; // Clear any previous error message
         }
