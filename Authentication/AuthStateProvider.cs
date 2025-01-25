@@ -26,7 +26,7 @@ public class AuthStateProvider : AuthenticationStateProvider
             {
                 new(ClaimTypes.NameIdentifier, userSession.ID.ToString()),
                 new(ClaimTypes.Role, userSession.IsAdmin ? "Admin" : "User")
-            }));
+            }, "Auth"));
         }
         else
         {
@@ -46,11 +46,11 @@ public class AuthStateProvider : AuthenticationStateProvider
             if (userSession == null)
                 return await Task.FromResult(new AuthenticationState(_anonymous));
 
-            var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(
-            [
+            var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(new List<Claim>
+            {
                 new(ClaimTypes.NameIdentifier, userSession.ID.ToString()),
-                new(ClaimTypes.Role, userSession.IsAdmin ? "Admin" : "User"),
-            ], "Auth"));
+                new(ClaimTypes.Role, userSession.IsAdmin ? "Admin" : "User")
+            }, "Auth"));
 
             return await Task.FromResult(new AuthenticationState(claimsPrincipal));
         }

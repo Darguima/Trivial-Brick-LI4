@@ -36,14 +36,9 @@ builder.Services.AddTransient<BLOrders>();
 
 builder.Services.AddHostedService<AssemblyLineCheckerService>();
 
+
 // App
 var app = builder.Build();
-
-// Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
-{
-    app.UseExceptionHandler("/Error", createScopeForErrors: true);
-}
 
 app.UseStaticFiles();
 app.UseAntiforgery();
@@ -51,6 +46,3 @@ app.UseAntiforgery();
 app.MapRazorComponents<App>().AddInteractiveServerRenderMode();
 
 app.Run();
-
-
-
