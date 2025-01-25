@@ -50,10 +50,16 @@
     </div>
 
     <div class="header-option">
-    <NavLink class="nav-link notification-button" @onclick="ToggleNotifications">
-        <span class="bi bi-bell-fill" aria-hidden="true"></span>
-    </NavLink>
-</div>
+        <NavLink class="nav-link" href="/notifications">
+            <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true">Notifications</span>
+        </NavLink>
+    </div>
+
+    <div class="header-option">
+        <NavLink class="nav-link notification-button" @onclick="ToggleNotifications">
+            <span class="bi bi-bell-fill" aria-hidden="true"></span>
+        </NavLink>
+    </div>
 
 
 </header>
@@ -71,7 +77,7 @@
         }
         else
         {
-            
+
         }
     }
 }
