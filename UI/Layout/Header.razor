@@ -78,10 +78,9 @@
 
     protected override async Task OnInitializedAsync()
     {
-        // Inscreve-se no evento de mudança de estado de autenticação
+        
         AuthStateProvider.AuthenticationStateChanged += OnAuthenticationStateChanged;
 
-        // Inicializa o estado
         await UpdateAuthenticationState();
     }
 
