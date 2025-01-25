@@ -3,28 +3,28 @@
 @rendermode InteractiveServer
 
 <header>
+    <div class="header-option">
+        <NavLink class="nav-link" href="/">
+            <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true">Home</span>
+        </NavLink>
+    </div>
+
     @if (IsAuthenticated)
     {
-        <div class="header-option">
-            <NavLink class="nav-link" href="/">
-                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true">Home</span>
-            </NavLink>
-        </div>
-
-        <div class="header-option">
-            <NavLink class="nav-link" href="/products-catalog">
-                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true">Products Catalog</span>
-            </NavLink>
-        </div>
-
         @if (IsAdmin)
         {
             <div class="header-option">
                 <NavLink class="nav-link" href="/assemblyLines">
-                    <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true">Assembly Lines</span>
+                    <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true">Lines</span>
                 </NavLink>
             </div>
         }
+
+        <div class="header-option">
+            <NavLink class="nav-link" href="/products-catalog">
+                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true">Catalog</span>
+            </NavLink>
+        </div>
 
         <div class="header-option">
             <NavLink class="nav-link" href="/orders">
@@ -32,30 +32,37 @@
             </NavLink>
         </div>
 
-        <div class="header-option">
-            <NavLink class="nav-link" href="/stock">
-                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true">Stock</span>
-            </NavLink>
-        </div>
+        @if (IsAdmin)
+        {
 
-        <div class="header-option">
-            <NavLink class="nav-link" href="/invoices">
-                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true">Invoices</span>
-            </NavLink>
-        </div>
+            <div class="header-option">
+                <NavLink class="nav-link" href="/stock">
+                    <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true">Stock</span>
+                </NavLink>
+            </div>
+        }
 
-        <div class="header-option">
-            <NavLink class="nav-link" href="/notifications">
-                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true">Notifications</span>
-            </NavLink>
-        </div>
+        @if (!IsAdmin)
+        {
 
-         <div class="header-option">
-        <NavLink class="nav-link notification-button" @onclick="ToggleNotifications">
-            <span class="bi bi-bell-fill" aria-hidden="true"></span>
-        </NavLink>
-    </div>
+            <div class="header-option">
+                <NavLink class="nav-link" href="/invoices">
+                    <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true">Invoices</span>
+                </NavLink>
+            </div>
 
+            <div class="header-option">
+                <NavLink class="nav-link" href="/notifications">
+                    <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true">Notifications</span>
+                </NavLink>
+            </div>
+
+            <div class="header-option">
+                <NavLink class="nav-link notification-button" @onclick="ToggleNotifications">
+                    <span class="bi bi-bell-fill" aria-hidden="true"></span>
+                </NavLink>
+            </div>
+        }
 
         <button class="btn btn-secondary" @onclick="Logout">Logout</button>
     }
@@ -87,10 +94,8 @@
     {
         if (firstRender && !_isInitialized)
         {
-            
             AuthStateProvider.AuthenticationStateChanged += OnAuthenticationStateChanged;
 
-            
             await UpdateAuthenticationState();
             _isInitialized = true;
             StateHasChanged();

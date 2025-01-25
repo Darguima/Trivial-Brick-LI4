@@ -33,7 +33,6 @@ public class AuthStateProvider : AuthenticationStateProvider
         NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(claimsPrincipal)));
     }
 
-    
     private ClaimsPrincipal CreateClaimsPrincipal(UserSession userSession)
     {
         var claims = new List<Claim>
@@ -45,7 +44,6 @@ public class AuthStateProvider : AuthenticationStateProvider
         var identity = new ClaimsIdentity(claims, "Auth");
         return new ClaimsPrincipal(identity);
     }
-
     
     public override async Task<AuthenticationState> GetAuthenticationStateAsync()
     {
@@ -60,7 +58,6 @@ public class AuthStateProvider : AuthenticationStateProvider
                 return new AuthenticationState(_anonymous);
             }
 
-           
             var claimsPrincipal = CreateClaimsPrincipal(userSession);
             return new AuthenticationState(claimsPrincipal);
         }

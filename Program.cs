@@ -7,7 +7,6 @@ using TrivialBrick.Authentication;
 using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 using Microsoft.AspNetCore.Components.Authorization;
 
-
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddRazorComponents()
@@ -19,7 +18,6 @@ builder.Services.AddAuthorizationCore();
 
 builder.Services.AddScoped<AuthStateProvider>();
 builder.Services.AddScoped<AuthenticationStateProvider, AuthStateProvider>();
-
 
 builder.Services.AddScoped<ProtectedSessionStorage>();
 
