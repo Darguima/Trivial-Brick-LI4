@@ -19,6 +19,7 @@ builder.Services.AddScoped<AuthenticationStateProvider, AuthStateProvider>();
 // DataLayer-related services
 builder.Services.AddTransient<ISqlDataAccess, SqlDataAccess>();
 builder.Services.AddTransient<ClientRepository>();
+builder.Services.AddTransient<AdminRepository>();
 builder.Services.AddTransient<AssemblyLineRepository>();
 builder.Services.AddTransient<ProductRepository>();
 builder.Services.AddTransient<OrderRepository>();
