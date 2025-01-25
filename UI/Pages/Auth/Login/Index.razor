@@ -39,20 +39,27 @@
             return;
         }
 
-        Client? client = await _clients.AuthenticateUser(email, password);
+        var isAdmin = false;
+        User? user = await _clients.AuthenticateUser(email, password);
 
-        statusMessage = client != null ? $"Welcome Client {client.Name}" : "Authentication failed";
+        if (user == null)
+        {
+            isAdmin = true;
+            user = await _clients.AuthenticateAdmin(email, password);
+        }
 
-        if (client == null)
+        statusMessage = user != null ? $"Welcome user {user.Name}. You are " + (isAdmin ? "admin" : "client") : "Authentication failed";
+
+        if (user == null)
         {
             statusMessage = "Authentication failed";
         }
         else
         {
-            statusMessage = $"Welcome Client {client.Name}";
+            statusMessage = $"Welcome Client {user.Name}";
 
             var authStateProvider = (AuthStateProvider)AuthStateProvider;
-            await authStateProvider.Login(client, false);
+            await authStateProvider.Login(user, isAdmin);
             NavManager.NavigateTo("/", true);
         }
 

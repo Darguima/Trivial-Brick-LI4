@@ -60,11 +60,11 @@ public class AuthStateProvider : AuthenticationStateProvider
         }
     }
 
-    public async Task Login(Client client, bool isAdmin)
+    public async Task Login(User user, bool isAdmin)
     {
         await UpdateAuthenticationState(new UserSession
         {
-            ID = client.ID,
+            ID = user.ID,
             IsAdmin = isAdmin
         });
     }
