@@ -6,6 +6,19 @@
             </div>
             <div class="col-4 text-center">
                 <p class="card-text state-text">@AssemblyLine.State</p>
+                @if (AssemblyLine.State == AssemblyLineState.Active)
+                {
+                    <p class="card-text order-status">
+                        @if (AssemblyLine.Order_id != null)
+                        {
+                            <span>Working with order @AssemblyLine.Order_id</span>
+                        }
+                        else
+                        {
+                            <span>Working without order</span>
+                        }
+                    </p>
+                }
             </div>
             <div class="col-4 text-end">
                 @if (!IsEditing)
@@ -15,10 +28,10 @@
                 else
                 {
                     <div class="edit-actions">
-                        <button class="btn btn-warning" @onclick="ToggleState">Edit State</button>
-                        <button class="btn btn-danger" @onclick="DeleteLine">Delete</button>
-                        <button class="btn btn-secondary" @onclick="CancelEdit">Cancel</button>
-                        <button class="btn btn-success" @onclick="SaveChanges">Save</button>
+                        <button class="btn custom-edit-state-button" @onclick="ToggleState">Edit State</button>
+                        <button class="btn custom-delete-button" @onclick="DeleteLine">Delete</button>
+                        <button class="btn custom-cancel-button" @onclick="CancelEdit">Cancel</button>
+                        <button class="btn custom-save-button" @onclick="SaveChanges">Save</button>
                     </div>
                 }
             </div>
