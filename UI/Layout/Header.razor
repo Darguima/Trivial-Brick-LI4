@@ -1,4 +1,6 @@
-﻿@rendermode InteractiveServer
+﻿@inject AuthStateProvider AuthStateProvider
+@inject NavigationManager NavManager
+@rendermode InteractiveServer
 
 <header>
     @if (IsAuthenticated)
@@ -15,11 +17,14 @@
             </NavLink>
         </div>
 
-        <div class="header-option">
-            <NavLink class="nav-link" href="/assemblyLines">
-                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true">Assembly Lines</span>
-            </NavLink>
-        </div>
+        @if (IsAdmin)
+        {
+            <div class="header-option">
+                <NavLink class="nav-link" href="/assemblyLines">
+                    <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true">Assembly Lines</span>
+                </NavLink>
+            </div>
+        }
 
         <div class="header-option">
             <NavLink class="nav-link" href="/orders">
@@ -45,17 +50,17 @@
             </NavLink>
         </div>
 
-        <div class="header-option">
+         <div class="header-option">
         <NavLink class="nav-link notification-button" @onclick="ToggleNotifications">
             <span class="bi bi-bell-fill" aria-hidden="true"></span>
         </NavLink>
     </div>
 
+
         <button class="btn btn-secondary" @onclick="Logout">Logout</button>
     }
     else
     {
-
         <div class="header-option">
             <NavLink class="nav-link" href="/login">
                 <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true">Login</span>
@@ -75,13 +80,21 @@
 @code {
     private NotificationComponent? notificationComponent;
     private bool IsAuthenticated { get; set; }
+    private bool IsAdmin { get; set; }
+    private bool _isInitialized = false;
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        
-        AuthStateProvider.AuthenticationStateChanged += OnAuthenticationStateChanged;
+        if (firstRender && !_isInitialized)
+        {
+            
+            AuthStateProvider.AuthenticationStateChanged += OnAuthenticationStateChanged;
 
-        await UpdateAuthenticationState();
+            
+            await UpdateAuthenticationState();
+            _isInitialized = true;
+            StateHasChanged();
+        }
     }
 
     private async void OnAuthenticationStateChanged(Task<AuthenticationState> authStateTask)
@@ -94,6 +107,9 @@
     {
         var authState = await AuthStateProvider.GetAuthenticationStateAsync();
         IsAuthenticated = authState.User.Identity?.IsAuthenticated ?? false;
+
+        var userSession = await AuthStateProvider.GetUserSession();
+        IsAdmin = userSession?.IsAdmin ?? false;
     }
 
     private void ToggleNotifications()

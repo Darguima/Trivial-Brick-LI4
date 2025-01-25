@@ -14,7 +14,6 @@ public class AuthStateProvider : AuthenticationStateProvider
     {
         _sessionStorage = sessionStorage;
     }
-
     private async Task UpdateAuthenticationState(UserSession? userSession)
     {
         ClaimsPrincipal claimsPrincipal;
@@ -22,11 +21,7 @@ public class AuthStateProvider : AuthenticationStateProvider
         if (userSession != null)
         {
             await _sessionStorage.SetAsync("UserSession", userSession);
-            claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(new List<Claim>
-            {
-                new(ClaimTypes.NameIdentifier, userSession.ID.ToString()),
-                new(ClaimTypes.Role, userSession.IsAdmin ? "Admin" : "User")
-            }, "Auth"));
+            claimsPrincipal = CreateClaimsPrincipal(userSession);
         }
         else
         {
@@ -34,50 +29,74 @@ public class AuthStateProvider : AuthenticationStateProvider
             claimsPrincipal = _anonymous;
         }
 
+        
         NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(claimsPrincipal)));
     }
 
+    
+    private ClaimsPrincipal CreateClaimsPrincipal(UserSession userSession)
+    {
+        var claims = new List<Claim>
+        {
+            new Claim(ClaimTypes.NameIdentifier, userSession.ID.ToString()),
+            new Claim(ClaimTypes.Role, userSession.IsAdmin ? "Admin" : "User")
+        };
+
+        var identity = new ClaimsIdentity(claims, "Auth");
+        return new ClaimsPrincipal(identity);
+    }
+
+    
     public override async Task<AuthenticationState> GetAuthenticationStateAsync()
     {
         try
         {
+            
             var userSession = await GetUserSession();
 
             if (userSession == null)
-                return await Task.FromResult(new AuthenticationState(_anonymous));
-
-            var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(new List<Claim>
             {
-                new(ClaimTypes.NameIdentifier, userSession.ID.ToString()),
-                new(ClaimTypes.Role, userSession.IsAdmin ? "Admin" : "User")
-            }, "Auth"));
+                
+                return new AuthenticationState(_anonymous);
+            }
 
-            return await Task.FromResult(new AuthenticationState(claimsPrincipal));
+           
+            var claimsPrincipal = CreateClaimsPrincipal(userSession);
+            return new AuthenticationState(claimsPrincipal);
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-            return await Task.FromResult(new AuthenticationState(_anonymous));
+           
+            Console.WriteLine($"Erro ao obter o estado de autenticação: {ex.Message}");
+            return new AuthenticationState(_anonymous);
         }
     }
 
+    
     public async Task Login(User user, bool isAdmin)
     {
-        await UpdateAuthenticationState(new UserSession
+        var userSession = new UserSession
         {
             ID = user.ID,
             IsAdmin = isAdmin
-        });
+        };
+
+        await UpdateAuthenticationState(userSession);
     }
 
+    
     public async Task Logout()
     {
         await UpdateAuthenticationState(null);
     }
 
+    
     public async Task<UserSession?> GetUserSession()
     {
         var userSessionResult = await _sessionStorage.GetAsync<UserSession>("UserSession");
         var userSession = userSessionResult.Success ? userSessionResult.Value : null;
+
+        
         return userSession;
     }
 }
