@@ -9,9 +9,50 @@ h5 {
 }
 
 p {
-    color: #555;
+    color: #000;
 }
 
+.custom-edit-state-button {
+    background-color: #FFC107;
+    color: #000; 
+    border: 1px solid #000;
+    transition: background-color 0.3s ease; 
+}
+
+.custom-delete-button {
+    background-color: #DC3545;
+    color: #000;
+    border: 1px solid #000;
+    transition: background-color 0.3s ease; 
+}
+
+.custom-cancel-button {
+    background-color: #FA812F;
+    color: #000;
+    border: 1px solid #000;
+    transition: background-color 0.3s ease; 
+}
+
+.custom-save-button {
+    background-color: #FA812F;
+    color: #000;
+    border: 1px solid #000;
+    transition: background-color 0.3s ease; 
+}
+
+.custom-edit-state-button:hover{
+    background-color: #da9709;
+}
+
+.custom-delete-button:hover{
+    background-color: #c41010;
+}
+
+
+.custom-cancel-button:hover,
+.custom-save-button:hover {
+    background-color: #E6731F;
+}
 
 .backdrop {
     position: fixed;
