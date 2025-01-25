@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Components.Authorization;
 using TrivialBrick.Authentication;
 
+using TrivialBrick.Services;
 using TrivialBrick.UI;
 using TrivialBrick.Business;
 using TrivialBrick.Data;
@@ -33,11 +34,7 @@ builder.Services.AddTransient<BLAssemblyLines>();
 builder.Services.AddTransient<BLCatalog>();
 builder.Services.AddTransient<BLOrders>();
 
-builder.Services.AddHostedService<AssemblyLineCheckerService>(provider =>
-{
-    var assemblyLineBL = provider.GetRequiredService<BLAssemblyLines>();
-    return new AssemblyLineCheckerService(assemblyLineBL);
-});
+builder.Services.AddHostedService<AssemblyLineCheckerService>();
 
 // App
 var app = builder.Build();

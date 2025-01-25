@@ -22,6 +22,8 @@ public class BLOrders(OrderRepository orderRepository, NotificationRepository no
         {
             await CreateInvoice(DateTime.Now, client_id, order.Order_id);
             await CreateNotification("Order queued for assembly line", date, client_id, order.Order_id);
+
+            // await  assemblyLinesBL.TryAllocateOrderToAssemblyLine(order);
         }
 
         return order;

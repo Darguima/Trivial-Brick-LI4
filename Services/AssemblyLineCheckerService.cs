@@ -1,18 +1,11 @@
-using Microsoft.Extensions.Hosting;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 using TrivialBrick.Business;
 
-public class AssemblyLineCheckerService : IHostedService, IDisposable
-{
-    private readonly BLAssemblyLines _assemblyLineBL;
-    private Timer? _timer;
+namespace TrivialBrick.Services;
 
-    public AssemblyLineCheckerService(BLAssemblyLines assemblyLineBL)
-    {
-        _assemblyLineBL = assemblyLineBL;
-    }
+public class AssemblyLineCheckerService(BLAssemblyLines assemblyLineBL) : IHostedService, IDisposable
+{
+    private readonly BLAssemblyLines _assemblyLineBL = assemblyLineBL;
+    private Timer? _timer;
 
     public Task StartAsync(CancellationToken cancellationToken)
     {
@@ -23,17 +16,16 @@ public class AssemblyLineCheckerService : IHostedService, IDisposable
 
     private async void CheckAssemblyLines(object? state)
     {
-
         try
         {
-            var assemblyLines = await _assemblyLineBL.GetOcupiedAssemblyLines();
+            var assemblyLines = await _assemblyLineBL.GetOccupiedAssemblyLines();
 
             foreach (var line in assemblyLines)
             {
-               
+
                 if (line.Expected_end_time <= DateTime.Now)
                 {
-                    await _assemblyLineBL.DesalocateAssemblyLine(line);
+                    await _assemblyLineBL.DeallocateAssemblyLine(line);
                 }
             }
         }

@@ -2,14 +2,9 @@ using TrivialBrick.Data.Models;
 
 namespace TrivialBrick.Data.Repositories
 {
-    public class AssemblyLineRepository
+    public class AssemblyLineRepository(ISqlDataAccess db)
     {
-        private readonly ISqlDataAccess _db;
-
-        public AssemblyLineRepository(ISqlDataAccess db)
-        {
-            _db = db;
-        }
+        private readonly ISqlDataAccess _db = db;
 
         public async Task<AssemblyLine?> Find(string id)
         {
@@ -26,7 +21,6 @@ namespace TrivialBrick.Data.Repositories
 
         public async Task<AssemblyLine> Add(string ID, AssemblyLineState state = AssemblyLineState.Inactive, int? orderId = null, DateTime? startMountTime = null, DateTime? endMountTime = null)
         {
-            Console.WriteLine($"Adding AssemblyLine {ID}: state = {state}, order_id = {orderId}, start_mount_time = {startMountTime}, end_mount_time = {endMountTime}");
             string sql = "insert into assembly_lines (assembly_line_id, state, order_id, mount_start_time, expected_end_time) values (@ID, @State, @OrderId, @StartMountTime, @EndMountTime)";
             await _db.SaveData(sql, new { ID, State = state.ToString(), OrderId = orderId, StartMountTime = startMountTime, EndMountTime = endMountTime });
             return new AssemblyLine { Assembly_line_id = ID, State = state, Order_id = orderId, Mount_start_time = startMountTime, Expected_end_time = endMountTime };
@@ -43,7 +37,7 @@ namespace TrivialBrick.Data.Repositories
                 StartMountTime = assemblyLine.Mount_start_time,
                 EndMountTime = assemblyLine.Expected_end_time
             });
-        }   
+        }
 
         public Task Remove(AssemblyLine assemblyLine)
         {
@@ -57,7 +51,7 @@ namespace TrivialBrick.Data.Repositories
             return await _db.LoadData<AssemblyLine, dynamic>(sql, new { });
         }
 
-        public async Task<List<AssemblyLine>> FindAllOcupied()
+        public async Task<List<AssemblyLine>> FindAllOccupied()
         {
             string sql = "select * from assembly_lines where order_id is not null";
             return await _db.LoadData<AssemblyLine, dynamic>(sql, new { });

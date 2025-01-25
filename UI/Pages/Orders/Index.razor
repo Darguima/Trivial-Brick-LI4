@@ -147,10 +147,6 @@
         {
             date = DateTime.Now; // Reset the date to the current date and time
             order = await _orders.CreateOrder(address, state, productId, clientId, price, date);
-            if (order != null) 
-            {
-                await _assembly_lines.TryAllocateOrderToAssemblyLine(order);
-            }
             orders = null; // Clear the list to avoid confusion
             errorMessage = null; // Clear any previous error message
         }
