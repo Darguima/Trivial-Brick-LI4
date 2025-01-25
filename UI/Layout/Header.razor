@@ -46,10 +46,10 @@
         </div>
 
         <div class="header-option">
-            <button class="nav-link notification-button" @onclick="ToggleNotifications">
-                <span class="bi bi-bell-fill" aria-hidden="true"></span>
-            </button>
-        </div>
+        <NavLink class="nav-link notification-button" @onclick="ToggleNotifications">
+            <span class="bi bi-bell-fill" aria-hidden="true"></span>
+        </NavLink>
+    </div>
 
         <button class="btn btn-secondary" @onclick="Logout">Logout</button>
     }
