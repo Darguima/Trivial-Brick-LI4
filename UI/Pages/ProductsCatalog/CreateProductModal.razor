@@ -1,0 +1,155 @@
+<Modal>
+  <div class="container">
+
+    <form class="form" @onsubmit="HandleSubmit">
+
+      <div class="form-group">
+        <label for="image">Image</label>
+        <InputFile OnChange="HandleImageChange" accept="image/png, image/jpeg" />
+      </div>
+
+      <div class="form-group">
+        <label for="instructions">Instructions ZIP</label>
+        <InputFile OnChange="HandleInstructionsChange" accept=".zip" />
+      </div>
+
+      <div class="form-group">
+        <label for="name">Name</label>
+        <input type="text" required class="form-control" @bind="name" placeholder="Enter product name">
+      </div>
+
+      <div class="form-group">
+        <label for="model">Model ID</label>
+        <input type="number" required class="form-control" @bind="model" placeholder="Enter product model id">
+      </div>
+
+      <div class="form-group">
+        <label for="description">Description</label>
+        <input type="text" required class="form-control" @bind="description" placeholder="Enter product description">
+      </div>
+
+      <div class="form-group">
+        <label for="price">Price</label>
+        <input type="number" required class="form-control" @bind="price" placeholder="Enter product price">
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn-primary" @onclick="ToggleModal">Close</button>
+        <button type="submit" class="btn-primary">Submit</button>
+      </div>
+    </form>
+
+    @if (!string.IsNullOrWhiteSpace(errorMessage))
+    {
+      <div class="alert alert-danger" role="alert">
+        @errorMessage
+      </div>
+    }
+  </div>
+
+</Modal>
+
+@code {
+  [Parameter]
+  public EventCallback ToggleModal { get; set; }
+
+  private string name = string.Empty;
+  private int? model = null;
+  private string description = string.Empty;
+  private decimal? price = null;
+  private IBrowserFile? image;
+  private int imageMaxAllowedSize = 1024 * 1024 * 15; // 15 MB limit
+  private IBrowserFile? instructions;
+  private int instructionsMaxAllowedSize = 1024 * 1024 * 15; // 15 MB limit
+
+  private string? errorMessage;
+
+  private async Task HandleSubmit()
+  {
+    if (
+    string.IsNullOrWhiteSpace(name) ||
+    string.IsNullOrWhiteSpace(description) ||
+
+    model == null ||
+    price == null ||
+
+    image == null ||
+    instructions == null
+    )
+    {
+      errorMessage = "Some fields are empty";
+      return;
+    }
+
+    errorMessage = null;
+
+    Product? product = null;
+    try
+    {
+      var _model = model ?? 0;
+      var _price = price ?? 0;
+
+      // Try to create to check on DB if the fields are valid
+      product = await _catalogs.CreateProduct(_model, name, _price, description, "");
+
+      // Try to add the thumbnail image
+      string relativeFolderPath = Path.Combine("uploads", "images", "products");
+      string fullPath = Path.Combine(System.Environment.CurrentDirectory, "wwwroot", relativeFolderPath);
+      string imageName = Guid.NewGuid().ToString("N") + Path.GetExtension(image.Name);
+      string imageRelativePath = Path.Combine(relativeFolderPath, imageName);
+      string imageFullPath = Path.Combine(fullPath, imageName);
+
+      if (!Directory.Exists(fullPath))
+      {
+        Directory.CreateDirectory(fullPath);
+      }
+
+      await using FileStream fs = new(imageFullPath, FileMode.Create);
+      await image.OpenReadStream(maxAllowedSize: imageMaxAllowedSize).CopyToAsync(fs);
+
+      product!.Image = imageRelativePath;
+      await _catalogs.UpdateProduct(product);
+
+      await ToggleModal.InvokeAsync(null);
+    }
+    catch (Exception ex)
+    {
+      errorMessage = ex.Message;
+
+      if (product != null)
+      {
+        await _catalogs.RemoveProduct(product);
+      }
+
+      return;
+    }
+  }
+
+  private void HandleImageChange(InputFileChangeEventArgs e)
+  {
+    var file = e.File;
+
+    if (file.Size > imageMaxAllowedSize)
+    {
+      errorMessage = "File is too large";
+      return;
+    }
+
+    image = file;
+    errorMessage = null;
+  }
+
+  private void HandleInstructionsChange(InputFileChangeEventArgs e)
+  {
+    var file = e.File;
+
+    if (file.Size > instructionsMaxAllowedSize)
+    {
+      errorMessage = "File is too large";
+      return;
+    }
+
+    instructions = file;
+    errorMessage = null;
+  }
+}

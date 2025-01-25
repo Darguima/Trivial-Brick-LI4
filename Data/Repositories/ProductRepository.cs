@@ -19,7 +19,7 @@ namespace TrivialBrick.Data.Repositories
             return _db.LoadData<Product, dynamic>(sql, new { });
         }
 
-        public async Task<Product> Add(int model, string name, int price, string description, string image)
+        public async Task<Product> Add(int model, string name, decimal price, string description, string image)
         {
             string sql = "insert into products (model, name, price, description, image) values (@Model, @Name, @Price, @Description, @Image)";
             await _db.SaveData(sql, new { Model = model, Name = name, Price = price, Description = description, Image = image });
