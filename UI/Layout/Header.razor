@@ -1,4 +1,6 @@
-﻿@rendermode InteractiveServer
+﻿@inject AuthStateProvider AuthStateProvider
+@inject NavigationManager NavManager
+@rendermode InteractiveServer
 
 <header>
     <div class="header-option">
@@ -7,67 +9,113 @@
         </NavLink>
     </div>
 
-    <div class="header-option">
-        <NavLink class="nav-link" href="/login">
-            <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true">Login</span>
-        </NavLink>
-    </div>
+    @if (IsAuthenticated)
+    {
+        @if (IsAdmin)
+        {
+            <div class="header-option">
+                <NavLink class="nav-link" href="/assemblyLines">
+                    <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true">Lines</span>
+                </NavLink>
+            </div>
+        }
 
-    <div class="header-option">
-        <NavLink class="nav-link" href="/signup">
-            <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true">Sign Up</span>
-        </NavLink>
-    </div>
+        <div class="header-option">
+            <NavLink class="nav-link" href="/products-catalog">
+                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true">Catalog</span>
+            </NavLink>
+        </div>
 
-    <div class="header-option">
-        <NavLink class="nav-link" href="/products-catalog">
-            <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true">Products Catalog</span>
-        </NavLink>
-    </div>
+        <div class="header-option">
+            <NavLink class="nav-link" href="/orders">
+                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true">Orders</span>
+            </NavLink>
+        </div>
 
-    <div class="header-option">
-        <NavLink class="nav-link" href="/assemblyLines">
-            <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true">Assembly Lines</span>
-        </NavLink>
-    </div>
+        @if (IsAdmin)
+        {
 
-    <div class="header-option">
-        <NavLink class="nav-link" href="/orders">
-            <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true">Orders</span>
-        </NavLink>
-    </div>
+            <div class="header-option">
+                <NavLink class="nav-link" href="/stock">
+                    <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true">Stock</span>
+                </NavLink>
+            </div>
+        }
 
-    <div class="header-option">
-        <NavLink class="nav-link" href="/stock">
-            <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true">Stock</span>
-        </NavLink>
-    </div>
+        @if (!IsAdmin)
+        {
 
-    <div class="header-option">
-        <NavLink class="nav-link" href="/invoices">
-            <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true">Invoices</span>
-        </NavLink>
-    </div>
+            <div class="header-option">
+                <NavLink class="nav-link" href="/invoices">
+                    <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true">Invoices</span>
+                </NavLink>
+            </div>
 
-    <div class="header-option">
-        <NavLink class="nav-link" href="/notifications">
-            <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true">Notifications</span>
-        </NavLink>
-    </div>
+            <div class="header-option">
+                <NavLink class="nav-link" href="/notifications">
+                    <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true">Notifications</span>
+                </NavLink>
+            </div>
 
-    <div class="header-option">
-        <NavLink class="nav-link notification-button" @onclick="ToggleNotifications">
-            <span class="bi bi-bell-fill" aria-hidden="true"></span>
-        </NavLink>
-    </div>
+            <div class="header-option">
+                <NavLink class="nav-link notification-button" @onclick="ToggleNotifications">
+                    <span class="bi bi-bell-fill" aria-hidden="true"></span>
+                </NavLink>
+            </div>
+        }
 
+        <button class="btn btn-secondary" @onclick="Logout">Logout</button>
+    }
+    else
+    {
+        <div class="header-option">
+            <NavLink class="nav-link" href="/login">
+                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true">Login</span>
+            </NavLink>
+        </div>
 
+        <div class="header-option">
+            <NavLink class="nav-link" href="/signup">
+                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true">Sign Up</span>
+            </NavLink>
+        </div>
+    }
 </header>
 
 <NotificationComponent @ref="notificationComponent" />
 
 @code {
     private NotificationComponent? notificationComponent;
+    private bool IsAuthenticated { get; set; }
+    private bool IsAdmin { get; set; }
+    private bool _isInitialized = false;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && !_isInitialized)
+        {
+            AuthStateProvider.AuthenticationStateChanged += OnAuthenticationStateChanged;
+
+            await UpdateAuthenticationState();
+            _isInitialized = true;
+            StateHasChanged();
+        }
+    }
+
+    private async void OnAuthenticationStateChanged(Task<AuthenticationState> authStateTask)
+    {
+        await UpdateAuthenticationState();
+        StateHasChanged();
+    }
+
+    private async Task UpdateAuthenticationState()
+    {
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        IsAuthenticated = authState.User.Identity?.IsAuthenticated ?? false;
+
+        var userSession = await AuthStateProvider.GetUserSession();
+        IsAdmin = userSession?.IsAdmin ?? false;
+    }
 
     private void ToggleNotifications()
     {
@@ -75,9 +123,21 @@
         {
             notificationComponent.ToggleNotifications();
         }
-        else
-        {
+    }
 
+    private async Task Logout()
+    {
+        if (AuthStateProvider is AuthStateProvider customAuthStateProvider)
+        {
+            await customAuthStateProvider.Logout();
         }
+
+        await UpdateAuthenticationState();
+        NavManager.NavigateTo("/login", true);
+    }
+
+    public void Dispose()
+    {
+        AuthStateProvider.AuthenticationStateChanged -= OnAuthenticationStateChanged;
     }
 }
