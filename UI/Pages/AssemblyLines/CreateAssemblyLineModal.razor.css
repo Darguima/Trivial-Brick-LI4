@@ -15,23 +15,6 @@
     opacity: 1;
 }
 
-/* Modal container */
-.modal {
-    display: none;
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 1050;
-    background-color: white;
-    border-radius: 5px;
-    max-width: 500px;
-    width: 100%;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-    opacity: 0;
-    transition: opacity 0.3s ease;
-}
-
 .modal.show {
     display: block;
     opacity: 1;
@@ -39,78 +22,53 @@
 
 /* Modal content */
 .modal-content {
-    border-radius: 5px;
-    padding: 20px;
-}
-
-/* Modal header */
-.modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid #e5e5e5;
-    padding-bottom: 10px;
-}
-
-.modal-title {
-    font-size: 1.25rem;
-    margin: 0;
-}
-
-/* Close button */
-.close {
-    background: none;
-    border: none;
-    font-size: 1.5rem;
-    color: #000;
-    cursor: pointer;
+    background-color: #F59B5E;
+    border: 1px solid #000; 
+    border-radius: 10px;
+    padding: 20px; 
+    box-shadow: none;
 }
 
 /* Modal body */
 .modal-body {
     padding: 15px 0;
+    background-color: #F59B5E;
 }
 
-/* Form input styles */
-.form-group {
-    margin-bottom: 1rem;
+.label-bold {
+    font-weight: 600; 
+    font-size: 1rem;  
 }
 
-.form-control {
-    width: 100%;
-    padding: 0.5rem;
-    border-radius: 4px;
-    border: 1px solid #ccc;
-}
 
 /* Modal footer */
 .modal-footer {
     display: flex;
     justify-content: flex-end;
     gap: 10px;
+    border-top: none;
 }
 
 /* Footer buttons */
-.btn {
-    padding: 0.5rem 1rem;
-    border-radius: 4px;
-    font-size: 1rem;
+.modal-footer .btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background-color: #FA812F; /* Cor de fundo dos .header-option */
+    color: black; /* Muda para preto, caso os textos sejam pretos */
+    height: 50%; /* Altura proporcional */
+    padding: 0.5rem 1rem; /* Ajuste de espaçamento */
+    border-radius: 10px; /* Mesma borda arredondada dos .header-option */
+    border-color: black;
+    border-width: 1px;
+    border-style: solid;
+    font-size: 1rem; /* Ajusta o tamanho da fonte */
+    cursor: pointer; /* Mostra o cursor ao passar */
+    transition: background-color 0.3s ease; /* Suavidade na mudança de cor */
 }
 
-.btn-secondary {
-    background-color: #6c757d;
-    color: white;
-}
-
-.btn-primary {
-    background-color: #007bff;
-    color: white;
-}
-
-.btn-secondary:hover {
-    background-color: #5a6268;
-}
-
-.btn-primary:hover {
-    background-color: #0056b3;
+/* Botões ao passar o mouse */
+.modal-footer .btn:hover {
+    background-color: #E6731F; /* Tom mais escuro para hover */
 }
