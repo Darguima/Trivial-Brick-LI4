@@ -165,7 +165,7 @@
             bool IsAuthenticated = authState.User.Identity?.IsAuthenticated ?? false;
             if (!IsAuthenticated)
             {
-                NavManager.NavigateTo("/");
+                NavigationManager.NavigateTo("/");
             }
             else
             {

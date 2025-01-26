@@ -45,7 +45,7 @@
 
         <div class="header-option">
             <NavLink class="nav-link notification-button" @onclick="async () => await ToggleNotifications()">
-                <span class="bi bi-bell-fill" aria-hidden="true" style="color: black;">🔔</span>
+                <span>🔔</span>
             </NavLink>
         </div>
 
@@ -110,7 +110,7 @@
         }
 
         await UpdateAuthenticationState();
-        NavManager.NavigateTo("/", true);
+        NavigationManager.NavigateTo("/", true);
     }
 
     public void Dispose()

@@ -80,7 +80,7 @@
 
                 var authStateProvider = (AuthStateProvider)AuthStateProvider;
                 await authStateProvider.Login(client, false);
-                NavManager.NavigateTo("/", true);
+                NavigationManager.NavigateTo("/", true);
             }
         }
         catch (Exception e)
