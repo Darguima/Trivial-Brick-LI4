@@ -10,18 +10,18 @@
   padding: 20px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   border-radius: 10px;
-  background-color: white; /* Fundo branco */
+  background-color: white; 
 }
 
 h3 {
   text-align: center;
   margin-bottom: 20px;
   font-size: 24px;
-  color: #FA812F; /* Cor do texto laranja */
+  color: #FA812F; 
 }
 
 button.btn-primary {
-  background-color: #FA812F; /* Fundo laranja */
+  background-color: #FA812F; 
   border: none;
   color: white;
   font-size: 16px;
@@ -32,7 +32,7 @@ button.btn-primary {
 }
 
 button.btn-primary:hover {
-  background-color: #E24800; /* Fundo laranja mais escuro */
+  background-color: #E24800; 
 }
 
 button.btn-link {
@@ -65,12 +65,12 @@ input.form-control {
 }
 
 h3.text-center {
-  color: #FA812F; /* Cor do texto laranja */
+  color: #FA812F; 
 }
 
 input:focus {
-  border-color: #FA812F; /* Cor da borda laranja */
-  box-shadow: 0 0 5px rgba(250, 129, 47, 0.5); /* Sombra laranja */
+  border-color: #FA812F; 
+  box-shadow: 0 0 5px rgba(250, 129, 47, 0.5); 
 }
 
 input.is-invalid {
