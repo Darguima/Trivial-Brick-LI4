@@ -1,0 +1,112 @@
+<div class="modal @ModalClass">
+    <div class="modal-content">
+        <div class="container">
+            <h3 class="section-title">Address:</h3>
+            <div class="form-group">
+                <input type="text" class="form-control" id="address" @bind="Address" placeholder="Street and postal code" required />
+            </div>
+            <h3 class="section-title">Payment Information:</h3>
+            <div class="form-group">
+                <input type="text" class="form-control" id="cardHolder" @bind="CardHolder" placeholder="Cardholder Name" required />
+            </div>
+            <div class="form-group">
+                <input type="text" class="form-control" id="cardNumber" @bind="CardNumber" placeholder="Card Number" required maxlength="19" />
+            </div>
+            <div class="form-group small-inputs">
+                <input type="text" class="form-control small-input" id="expiryDate" @bind="ExpiryDate" placeholder="MM/YY" required />
+                <input type="text" class="form-control small-input" id="cvv" @bind="CVV" placeholder="CVV" required maxlength="3" />
+            </div>
+            @if (!string.IsNullOrWhiteSpace(errorMessage))
+            {
+                <div class="alert alert-danger mt-3">
+                    <strong>Error:</strong> @errorMessage
+                </div>
+            }
+        </div>
+        <div class="button-container">
+            <button class="btn-cancel" @onclick="CloseModal">Cancel</button>
+            <button class="btn-pay" @onclick="SubmitPayment">Pay</button>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public EventCallback OnClose { get; set; }
+
+    [Parameter]
+    public EventCallback<string> OnPaymentSubmitted { get; set; }
+
+    private string ModalClass { get; set; } = "hide";
+
+    public string Address { get; set; } = string.Empty;
+    public string CardHolder { get; set; } = string.Empty;
+    public string CardNumber { get; set; } = string.Empty;
+    public string ExpiryDate { get; set; } = string.Empty;
+    public string CVV { get; set; } = string.Empty;
+    private string? errorMessage;
+
+    public void ShowModal()
+    {
+        ModalClass = "show";
+        StateHasChanged();
+    }
+
+    private void CloseModal()
+    {
+        ModalClass = "hide";
+        OnClose.InvokeAsync();
+        StateHasChanged();
+    }
+
+    private async Task SubmitPayment()
+    {
+        errorMessage = null;
+
+        if (!ValidateCardNumber(CardNumber))
+        {
+            errorMessage = "Payment failed, check card number.";
+            return;
+        }
+
+        if (!ValidateExpiryDate(ExpiryDate))
+        {
+            errorMessage = "Payment failed, check expiry date.";
+            return;
+        }
+
+        if (!ValidateCVV(CVV))
+        {
+            errorMessage = "Payment failed, check CVV.";
+            return;
+        }
+
+        await OnPaymentSubmitted.InvokeAsync(Address);
+        CloseModal();
+    }
+
+    private bool ValidateCardNumber(string cardNumber)
+    {
+        return System.Text.RegularExpressions.Regex.IsMatch(cardNumber, @"^\d{16}$|^\d{19}$");
+    }
+
+    private bool ValidateExpiryDate(string expiryDate)
+    {
+        if (!System.Text.RegularExpressions.Regex.IsMatch(expiryDate, @"^(0[1-9]|1[0-2])\/\d{2}$"))
+        {
+            return false;
+        }
+
+        var parts = expiryDate.Split('/');
+        var month = int.Parse(parts[0]);
+        var year = int.Parse(parts[1]) + 2000;
+
+        var expiry = new DateTime(year, month, 1).AddMonths(1).AddDays(-1);
+        return expiry >= DateTime.Now;
+    }
+
+    private bool ValidateCVV(string cvv)
+    {
+        return System.Text.RegularExpressions.Regex.IsMatch(cvv, @"^\d{3}$");
+    }
+}

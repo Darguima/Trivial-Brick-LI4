@@ -55,5 +55,12 @@ namespace TrivialBrick.Data.Repositories
             string sql = "delete from notifications where notification_id = @Notification_id";
             return _db.SaveData(sql, notification);
         }
+
+
+        public async Task<List<Notification>> FindAllByClient(int clientId)
+        {
+            string sql = "select * from notifications where client_id = @clientId";
+            return await _db.LoadData<Notification, dynamic>(sql, new { clientId });
+        }
     }
 }

@@ -89,6 +89,11 @@ public class BLOrders(OrderRepository orderRepository, NotificationRepository no
         return await notificationRepository.FindAll();
     }
 
+    public async Task<List<Notification>> GetNotificationsByClient(int client_id)
+    {
+        return await notificationRepository.FindAllByClient(client_id);
+    }
+
     public async Task UpdateNotification(Notification notification)
     {
         await notificationRepository.Update(notification);

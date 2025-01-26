@@ -1,0 +1,19 @@
+.order-card {
+    border: 1px solid #000;
+    padding: 10px;
+    background-color: #F59B5E;
+}
+
+.custom-edit-state-button {
+    background-color: #FFC107;
+    color: #000; 
+    border: 1px solid #000;
+    transition: background-color 0.3s ease; 
+}
+
+.custom-delete-button {
+    background-color: #DC3545;
+    color: #000;
+    border: 1px solid #000;
+    transition: background-color 0.3s ease; 
+}

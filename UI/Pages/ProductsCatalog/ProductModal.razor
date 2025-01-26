@@ -1,0 +1,104 @@
+<div class="modal @ModalClass">
+    <div class="modal-content">
+        <span class="close" @onclick="CloseModal">&times;</span>
+        <div class="container">
+            <img src="@Image" alt="Product Image" />
+            <h3 class="name">@Name</h3>
+            <p class="price">
+                @Price 
+                <img src="/images/lego_coin.png" alt="Lego Coin" />
+            </p>
+            @if (!HaveStock)
+            {
+                <div class="out-of-stock-container">
+                    <span>Out of Stock</span>
+                </div>
+            }
+        </div>
+        <div class="button-container">
+            <button class="btn-cancel" @onclick="CloseModal">Cancelar</button>
+            <button class="btn-buy" @onclick="ShowPaymentModal">Comprar</button>
+        </div>
+    </div>
+</div>
+
+<PaymentModal @ref="paymentModal" OnClose="OnPaymentModalClose" OnPaymentSubmitted="HandlePaymentSubmitted" />
+
+@if (!string.IsNullOrWhiteSpace(errorMessage))
+{
+    <div class="alert alert-danger mt-3">
+        <strong>Error:</strong> @errorMessage
+    </div>
+}
+
+@code {
+    [Parameter]
+
+    public required string ClientId { get; set; }
+
+    [Parameter]
+    public string Name { get; set; } = "Product Template";
+
+    [Parameter]
+    public int ProductId { get; set; }
+
+    [Parameter]
+    public decimal Price { get; set; } = 100;
+
+    [Parameter]
+    public required string Image { get; set; }
+
+    [Parameter]
+    public bool HaveStock { get; set; } = true;
+
+    [Parameter]
+    public EventCallback OnClose { get; set; }
+
+    private string ModalClass { get; set; } = "hide";
+
+    private string? errorMessage;
+    private PaymentModal? paymentModal;
+
+    public void ShowModal()
+    {
+        ModalClass = "show";
+        StateHasChanged();
+    }
+
+    private void CloseModal()
+    {
+        ModalClass = "hide";
+        OnClose.InvokeAsync();
+        StateHasChanged();
+    }
+
+    private void ShowPaymentModal()
+    {
+        errorMessage = null; // Clear any previous error message
+        paymentModal?.ShowModal();
+    }
+
+    private void OnPaymentModalClose()
+    {
+        // Handle payment modal close
+    }
+
+    private async Task HandlePaymentSubmitted(string address)
+    {
+        try
+        {
+            errorMessage = null; // Clear any previous error message
+            var date = DateTime.Now;
+            var order = await _orders.CreateOrder(address, OrderState.Wait_line, ProductId, int.Parse(ClientId), Price, date);
+            if (order != null)
+            {
+                await _assembly_lines.TryAllocateOrderToAssemblyLine(order);
+            }
+            CloseModal();
+        }
+        catch (Exception ex)
+        {
+            errorMessage = ex.Message;
+        }
+    }
+}
