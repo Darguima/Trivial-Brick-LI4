@@ -29,7 +29,6 @@
 
         @if (IsAdmin)
         {
-
             <div class="header-option">
                 <NavLink class="nav-link" href="/stock">
                     <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true">Stock</span>
@@ -39,26 +38,18 @@
 
         @if (!IsAdmin)
         {
-
             <div class="header-option">
                 <NavLink class="nav-link" href="/invoices">
                     <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true">Invoices</span>
                 </NavLink>
             </div>
-
-            @* <div class="header-option">
-                <NavLink class="nav-link" href="/notifications">
-                    <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true">Notifications</span>
-                </NavLink>
-            </div> *@
-            
         }
 
         <div class="header-option">
-                <NavLink class="nav-link notification-button" @onclick="ToggleNotifications">
-                    <span class="bi bi-bell-fill" aria-hidden="true"></span>
-                </NavLink>
-            </div>
+            <NavLink class="nav-link notification-button" @onclick="ToggleNotifications">
+                <span class="bi bi-bell-fill" aria-hidden="true"></span>
+            </NavLink>
+        </div>
 
         <div class="header-option">
             <NavLink class="nav-link" href="" @onclick="Logout">
@@ -66,30 +57,16 @@
             </NavLink>
         </div>
     }
-    else
-    {
-
-        @* <div class="header-option">
-            <NavLink class="nav-link" href="/login">
-                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true">Login</span>
-            </NavLink>
-        </div>
-
-        <div class="header-option">
-            <NavLink class="nav-link" href="/signup">
-                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true">Sign Up</span>
-            </NavLink>
-        </div> *@
-    }
 </header>
 
-<NotificationComponent @ref="notificationComponent" />
+<NotificationComponent @ref="notificationComponent" ClientId="@ClientId" IsAdmin="@IsAdmin" />
 
 @code {
     private NotificationComponent? notificationComponent;
     private bool IsAuthenticated { get; set; }
     private bool IsAdmin { get; set; }
     private bool _isInitialized = false;
+    private string ClientId { get; set; } = string.Empty;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -116,13 +93,14 @@
 
         var userSession = await AuthStateProvider.GetUserSession();
         IsAdmin = userSession?.IsAdmin ?? false;
+        ClientId = userSession?.ID ?? string.Empty;
     }
 
     private void ToggleNotifications()
     {
         if (notificationComponent != null)
         {
-            notificationComponent.ToggleNotifications();
+            notificationComponent.ToggleNotifications(ClientId, IsAdmin);
         }
     }
 

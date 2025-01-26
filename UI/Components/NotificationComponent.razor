@@ -4,7 +4,7 @@
 <div class="notification-container" style="display: @(showNotifications ? "block" : "none")">
     <div class="notification-header">
         <h4>Notifications</h4>
-        <button class="close-button" @onclick="ToggleNotifications">X</button>
+        <button class="close-button" @onclick="ToggleNotificationsHandler">X</button>
     </div>
     <ul class="list-group">
         @if (notifications != null && notifications.Count > 0)
@@ -31,7 +31,12 @@
     private List<Notification>? notifications;
     private bool showNotifications = false;
 
-    protected override async Task OnInitializedAsync()
+    [Parameter]
+    public string ClientId { get; set; } = string.Empty;
+    [Parameter]
+    public bool IsAdmin { get; set; }
+
+    protected override async Task OnParametersSetAsync()
     {
         await LoadNotifications();
     }
@@ -40,7 +45,14 @@
     {
         try
         {
-            notifications = await _orders.GetAllNotifications();
+            if (IsAdmin)
+            {
+                notifications = await _orders.GetAllNotifications();
+            }
+            else if (!string.IsNullOrEmpty(ClientId) && int.TryParse(ClientId, out int clientId))
+            {
+                notifications = await _orders.GetNotificationsByClient(clientId);
+            }
         }
         catch (Exception ex)
         {
@@ -48,8 +60,15 @@
         }
     }
 
-    public void ToggleNotifications()
+    private void ToggleNotificationsHandler()
     {
+        ToggleNotifications(ClientId, IsAdmin);
+    }
+
+    public void ToggleNotifications(string clientId, bool isAdmin)
+    {
+        ClientId = clientId;
+        IsAdmin = isAdmin;
         showNotifications = !showNotifications;
         StateHasChanged(); // Ensure the UI is updated
     }

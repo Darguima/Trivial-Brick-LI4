@@ -37,6 +37,7 @@ else
 
 <ProductModal 
     @ref="productModal" 
+    ClientId="@ClientId"
     Name="@selectedProduct?.Name" 
     ProductId="@selectedProductId" 
     Price="@selectedProductPrice" 
@@ -54,6 +55,8 @@ else
     private int selectedProductId => selectedProduct?.Model ?? 0;
     private decimal selectedProductPrice => selectedProduct?.Price ?? 0;
     private ProductModal? productModal;
+
+    private string ClientId { get; set; } = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
@@ -75,7 +78,7 @@ else
             {
             bool IsAdmin = userSession?.IsAdmin ?? false;
             }
-
+            ClientId = userSession?.ID ?? string.Empty;
             isInitialized = true;
             StateHasChanged();
         }
