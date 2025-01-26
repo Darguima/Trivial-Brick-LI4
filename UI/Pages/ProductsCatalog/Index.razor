@@ -48,7 +48,6 @@ else
     private List<Product>? products;
     private bool showCreateProductModal = false;
     private bool IsAdmin { get; set; }
-    private bool isInitialized = false;
     private Product? selectedProduct;
     private int selectedProductId => selectedProduct?.Model ?? 0;
     private decimal selectedProductPrice => selectedProduct?.Price ?? 0;
@@ -56,14 +55,11 @@ else
 
     private string ClientId { get; set; } = string.Empty;
 
+    private string? errorMessage;
+
     protected override async Task OnInitializedAsync()
     {
-        products = await _catalogs.GetAllProducts();
-    }
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender && !isInitialized)
+        try
         {
             var userSession = await ((AuthStateProvider)AuthStateProvider).GetUserSession();
             var authState = await AuthStateProvider.GetAuthenticationStateAsync();
@@ -74,11 +70,17 @@ else
             }
             else
             {
-            bool IsAdmin = userSession?.IsAdmin ?? false;
+                IsAdmin = userSession?.IsAdmin ?? false;
+                ClientId = userSession?.ID ?? string.Empty;
             }
-            ClientId = userSession?.ID ?? string.Empty;
-            isInitialized = true;
-            StateHasChanged();
+            
+            products = await _catalogs.GetAllProducts();
+            errorMessage = null;
+        }
+        catch (Exception ex)
+        {
+            // Handle exception
+            errorMessage = ex.Message;
         }
     }
 
@@ -96,5 +98,21 @@ else
     private void OnModalClose()
     {
         selectedProduct = null;
+
+
+    }
+
+    private async Task LoadProducts()
+    {
+        try
+        {
+            products = await _catalogs.GetAllProducts();
+            errorMessage = null;
+        }
+        catch (Exception ex)
+        {
+            // Handle exception
+            errorMessage = ex.Message;
+        }
     }
 }

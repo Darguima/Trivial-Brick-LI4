@@ -17,3 +17,10 @@
     border: 1px solid #000;
     transition: background-color 0.3s ease; 
 }
+
+.product-image {
+    max-width: 100px;
+    max-height: 100px;
+    margin-top: 10px;
+    margin-left: 10px;
+}

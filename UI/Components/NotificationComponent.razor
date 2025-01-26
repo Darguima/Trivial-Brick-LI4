@@ -11,14 +11,16 @@
         {
             @foreach (var notif in notifications.OrderByDescending(n => n.Datetime))
             {
-                <li class="list-group-item">
-                    <span class="time">@notif.Datetime.ToString("HH:mm")</span> - 
-                    <span class="message">@notif.Message</span> - 
-                    <span class="client-id">Client ID: @notif.Client_id</span> - 
-                    <span class="order-id">Order ID: @notif.Order_id</span> - 
-                    <span class="notification-id">Notification ID: @notif.Notification_id</span>
-                </li>
-            }
+            <li class="list-group-item">
+                <span class="time">@notif.Datetime.ToString("HH:mm")</span> - 
+                <span class="message">@notif.Message</span> - 
+                @if (IsAdmin)
+                {
+                    <span class="client-id">Client ID: @notif.Client_id</span>
+                }
+                <span class="order-id">Order ID: @notif.Order_id</span> 
+            </li>
+        }
         }
         else
         {
