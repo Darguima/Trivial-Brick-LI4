@@ -3,11 +3,6 @@
 @rendermode InteractiveServer
 
 <header>
-    <div class="header-option">
-        <NavLink class="nav-link" href="/">
-            <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true">Home</span>
-        </NavLink>
-    </div>
 
     @if (IsAuthenticated)
     {
@@ -50,33 +45,17 @@
                     <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true">Invoices</span>
                 </NavLink>
             </div>
-
-            <div class="header-option">
-                <NavLink class="nav-link" href="/notifications">
-                    <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true">Notifications</span>
-                </NavLink>
-            </div>
-
-            <div class="header-option">
-                <NavLink class="nav-link notification-button" @onclick="ToggleNotifications">
-                    <span class="bi bi-bell-fill" aria-hidden="true"></span>
-                </NavLink>
-            </div>
         }
 
-        <button class="btn btn-secondary" @onclick="Logout">Logout</button>
-    }
-    else
-    {
         <div class="header-option">
-            <NavLink class="nav-link" href="/login">
-                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true">Login</span>
+            <NavLink class="nav-link notification-button" @onclick="ToggleNotifications">
+                <span class="bi bi-bell-fill" aria-hidden="true"></span>
             </NavLink>
         </div>
 
         <div class="header-option">
-            <NavLink class="nav-link" href="/signup">
-                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true">Sign Up</span>
+            <NavLink class="nav-link" href="" @onclick="Logout">
+                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true">Logout</span>
             </NavLink>
         </div>
     }
@@ -133,7 +112,7 @@
         }
 
         await UpdateAuthenticationState();
-        NavManager.NavigateTo("/login", true);
+        NavManager.NavigateTo("/", true);
     }
 
     public void Dispose()

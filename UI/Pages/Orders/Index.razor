@@ -17,7 +17,6 @@ else
     <p>No orders found.</p>
 }
 
-<!-- Edit Order Modal -->
 @if (isEditModalVisible)
 {
     <div class="modal-backdrop fade show"></div>
@@ -57,12 +56,11 @@ else
     private int productId;
     private int clientId;
     private decimal price;
+    private Order? order;
     private string address = string.Empty;
     private OrderState state = OrderState.Wait_line;
     */
     private DateTime date = DateTime.Now;
-    private string dateString = DateTime.Now.ToString("yyyy-MM-ddTHH:mm");
-    private Order? order;
     private List<Order>? orders;
     private string? errorMessage;
 
@@ -70,9 +68,19 @@ else
     private Order? orderToEdit;
     private OrderState editOrderState;
     private string editOrderAddress = string.Empty;
+    private bool IsAdmin = false;
 
     protected override async Task OnInitializedAsync()
     {
+        try
+        {
+            var userSession = await ((AuthStateProvider)AuthStateProvider).GetUserSession();
+            IsAdmin = userSession?.IsAdmin ?? false;
+        }
+        catch
+        {
+            IsAdmin = false; // Default to false
+        }
         await GetAllOrders(); // Load data when the page initializes
         
     }
@@ -82,15 +90,27 @@ else
     {
         try
         {
-            date = DateTime.Now; // Reset the date to the current date and time
+            var userSession = await ((AuthStateProvider)AuthStateProvider).GetUserSession();
+            IsAdmin = userSession?.IsAdmin ?? false;
+        }
+        catch
+        {
+            IsAdmin = false; // Default to false
+        }
+    }
+
+    private async Task CreateOrder()
+    {
+        if (!IsAdmin)
+        {
+            errorMessage = "You do not have permission to create orders.";
+            return;
+        }
+
+        try
+        {
             order = await _orders.CreateOrder(address, state, productId, clientId, price, date);
-            if (order != null)
-            {
-                // This should be done by the BL, but as a workaround, we'll do it here
-                await _assembly_lines.TryAllocateOrderToAssemblyLine(order);
-            }
-            orders = null; // Clear the list to avoid confusion
-            errorMessage = null; // Clear any previous error message
+            await GetAllOrders();
         }
         catch (Exception ex)
         {
@@ -104,8 +124,8 @@ else
         try
         {
             order = await _orders.GetOrder(orderId);
-            orders = null; // Clear the list to avoid confusion
-            errorMessage = null; // Clear any previous error message
+            orders = null;
+            errorMessage = null;
         }
         catch (Exception ex)
         {
@@ -119,8 +139,7 @@ else
         try
         {
             orders = await _orders.GetAllOrders();
-            order = null; // Clear the single order to avoid confusion
-            errorMessage = null; // Clear any previous error message
+            errorMessage = null;
         }
         catch (Exception ex)
         {
@@ -130,6 +149,8 @@ else
 
     private void ShowEditModal(Order ord)
     {
+        if (!IsAdmin) return;
+
         orderToEdit = ord;
         editOrderState = ord.State;
         editOrderAddress = ord.Address;
@@ -143,55 +164,33 @@ else
 
     private async Task EditOrder()
     {
-        if (orderToEdit != null)
+        if (!IsAdmin) return;
+
+        try
         {
-            try
+            if (orderToEdit != null)
             {
-                // Ensure the state cannot be changed if it is already Finished
-                if (orderToEdit.State == OrderState.Finished && editOrderState != OrderState.Finished)
-                {
-                    errorMessage = "Cannot change the state of a finished order.";
-                    return;
-                }
-
                 orderToEdit.State = editOrderState;
-                if (orderToEdit.State != OrderState.Finished)
-                {
-                    orderToEdit.Address = editOrderAddress;
-                }
-
+                orderToEdit.Address = editOrderAddress;
                 await _orders.UpdateOrder(orderToEdit);
-
-                if (order != null && order.Order_id == orderToEdit.Order_id)
-                {
-                    order = orderToEdit; // Update the individual order
-                }
-                else
-                {
-                    await GetAllOrders(); // Update the list of all orders
-                }
-
+                await GetAllOrders();
                 CloseEditModal();
             }
-            catch (Exception ex)
-            {
-                errorMessage = ex.Message;
-            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = ex.Message;
         }
     }
 
     private async Task DeleteOrder(Order orderToDelete)
     {
+        if (!IsAdmin) return;
+
         try
         {
-            if (orderToDelete.State != OrderState.Finished)
-            {
-                errorMessage = "Only finished orders can be deleted.";
-                return;
-            }
-
             await _orders.DeleteOrder(orderToDelete);
-            await GetAllOrders(); // Update the list of all orders
+            await GetAllOrders();
         }
         catch (Exception ex)
         {
