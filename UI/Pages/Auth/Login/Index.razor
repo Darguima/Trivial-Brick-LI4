@@ -167,7 +167,7 @@
         {
             var authStateProvider = (AuthStateProvider)AuthStateProvider;
             await authStateProvider.Login(user, isAdmin);
-            NavManager.NavigateTo("/products-catalog", true);
+            NavigationManager.NavigateTo("/products-catalog", true);
         }
 
         StateHasChanged();
@@ -203,7 +203,7 @@
             {
                 var authStateProvider = (AuthStateProvider)AuthStateProvider;
                 await authStateProvider.Login(client, false);
-                NavManager.NavigateTo("/products-catalog", true);
+                NavigationManager.NavigateTo("/products-catalog", true);
             }
         }
         catch (Exception e)
