@@ -1,6 +1,84 @@
-form {
+.auth-container {
   display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  max-width: 30rem;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.card {
+  width: 400px;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  background-color: white; 
+}
+
+h3 {
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 24px;
+  color: #FA812F; 
+}
+
+button.btn-primary {
+  background-color: #FA812F; 
+  border: none;
+  color: white;
+  font-size: 16px;
+  padding: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+button.btn-primary:hover {
+  background-color: #E24800; 
+}
+
+button.btn-link {
+  background-color: #333;
+  color: white;
+  padding: 10px;
+  text-align: center;
+  font-size: 14px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  border: none;
+}
+
+button.btn-link:hover {
+  background-color: #444;
+  color: white;
+}
+
+.alert-primary {
+  background-color: #d1ecf1;
+  border-color: #bee5eb;
+  color: #0c5460;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+input.form-control {
+  margin-bottom: 15px;
+}
+
+h3.text-center {
+  color: #FA812F; 
+}
+
+input:focus {
+  border-color: #FA812F; 
+  box-shadow: 0 0 5px rgba(250, 129, 47, 0.5); 
+}
+
+input.is-invalid {
+  border-color: red;
+  background-color: #f8d7da;
+}
+
+input.is-valid {
+  border-color: #28a745;
+  background-color: #d4edda;
 }
