@@ -3,7 +3,6 @@
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background-color: #f4f6f9;
 }
 
 .card {
@@ -11,17 +10,18 @@
   padding: 20px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   border-radius: 10px;
-  background-color: #fff;
+  background-color: white; /* Fundo branco */
 }
 
 h3 {
   text-align: center;
   margin-bottom: 20px;
   font-size: 24px;
+  color: #FA812F; /* Cor do texto laranja */
 }
 
 button.btn-primary {
-  background-color: #4CAF50;
+  background-color: #FA812F; /* Fundo laranja */
   border: none;
   color: white;
   font-size: 16px;
@@ -32,7 +32,7 @@ button.btn-primary {
 }
 
 button.btn-primary:hover {
-  background-color: #4CAF50;
+  background-color: #E24800; /* Fundo laranja mais escuro */
 }
 
 button.btn-link {
@@ -65,12 +65,12 @@ input.form-control {
 }
 
 h3.text-center {
-  color: #4CAF50;
+  color: #FA812F; /* Cor do texto laranja */
 }
 
 input:focus {
-  border-color: #4CAF50;
-  box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
+  border-color: #FA812F; /* Cor da borda laranja */
+  box-shadow: 0 0 5px rgba(250, 129, 47, 0.5); /* Sombra laranja */
 }
 
 input.is-invalid {
