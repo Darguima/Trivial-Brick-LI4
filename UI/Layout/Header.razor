@@ -45,41 +45,19 @@
                     <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true">Invoices</span>
                 </NavLink>
             </div>
-
-            @* <div class="header-option">
-                <NavLink class="nav-link" href="/notifications">
-                    <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true">Notifications</span>
-                </NavLink>
-            </div> *@
-            
         }
 
         <div class="header-option">
-                <NavLink class="nav-link notification-button" @onclick="ToggleNotifications">
-                    <span class="bi bi-bell-fill" aria-hidden="true"></span>
-                </NavLink>
-            </div>
+            <NavLink class="nav-link notification-button" @onclick="ToggleNotifications">
+                <span class="bi bi-bell-fill" aria-hidden="true"></span>
+            </NavLink>
+        </div>
 
         <div class="header-option">
             <NavLink class="nav-link" href="" @onclick="Logout">
-                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true">Logout</span> 
+                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true">Logout</span>
             </NavLink>
         </div>
-    }
-    else
-    {
-
-        @* <div class="header-option">
-            <NavLink class="nav-link" href="/login">
-                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true">Login</span>
-            </NavLink>
-        </div>
-
-        <div class="header-option">
-            <NavLink class="nav-link" href="/signup">
-                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true">Sign Up</span>
-            </NavLink>
-        </div> *@
     }
 </header>
 

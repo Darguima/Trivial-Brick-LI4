@@ -13,7 +13,7 @@
                     <label for="email">Email</label>
                     <input 
                         type="text" 
-                        class="form-control @(IsValidEmail(email) ? "is-valid" : "is-invalid")" 
+                        class="form-control @(GetEmailClassStyle(email))"
                         id="email" 
                         placeholder="Enter email" 
                         @bind="email" 
@@ -46,7 +46,7 @@
                     <label for="email">Email</label>
                     <input 
                         type="text" 
-                        class="form-control @(IsValidEmail(email) ? "is-valid" : "is-invalid")" 
+                        class="form-control @(GetEmailClassStyle(email))"
                         id="email" 
                         placeholder="Enter email" 
                         @bind="email" 
@@ -223,5 +223,15 @@
     
         var emailRegex = @"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$";
         return System.Text.RegularExpressions.Regex.IsMatch(email, emailRegex);
+    }
+
+    private string GetEmailClassStyle(string? email)
+    {
+        if (string.IsNullOrWhiteSpace(email))
+        {
+            return string.Empty;
+        }
+
+        return IsValidEmail(email) ? "is-valid" : "is-invalid";
     }
 }
