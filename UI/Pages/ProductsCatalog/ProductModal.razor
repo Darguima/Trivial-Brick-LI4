@@ -33,6 +33,10 @@
 
 @code {
     [Parameter]
+
+    public required string ClientId { get; set; }
+
+    [Parameter]
     public string Name { get; set; } = "Product Template";
 
     [Parameter]
@@ -85,7 +89,7 @@
         {
             errorMessage = null; // Clear any previous error message
             var date = DateTime.Now;
-            var order = await _orders.CreateOrder(address, OrderState.Wait_line, ProductId, 3, Price, date);
+            var order = await _orders.CreateOrder(address, OrderState.Wait_line, ProductId, int.Parse(ClientId), Price, date);
             if (order != null)
             {
                 await _assembly_lines.TryAllocateOrderToAssemblyLine(order);
