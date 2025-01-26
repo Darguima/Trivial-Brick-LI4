@@ -5,6 +5,13 @@
 
 <p>Manage your orders here.</p>
 
+@if (!IsAdmin)
+{
+    <div class="alert alert-info">
+        <strong>Note:</strong> You only have permission to view all orders.
+    </div>
+}
+
 <div class="form-group">
     <label for="orderId">Order ID</label>
     <input type="number" class="form-control" id="orderId" @bind="orderId" placeholder="Enter Order ID" />
@@ -13,40 +20,43 @@
 <button class="btn btn-secondary" @onclick="GetOrder">Get Order</button>
 <button class="btn btn-info" @onclick="GetAllOrders">Get All Orders</button>
 
-<hr />
+@if (IsAdmin)
+{
+    <hr />
 
-<h3>Create New Order</h3>
+    <h3>Create New Order</h3>
 
-<div class="form-group">
-    <label for="address">Address</label>
-    <input type="text" class="form-control" id="address" @bind="address" placeholder="Enter Address" />
-</div>
-<div class="form-group">
-    <label for="state">State</label>
-    <select class="form-control" id="state" @bind="state">
-        <option value="Wait_line">Wait Line</option>
-        <option value="Assembly_line">Assembly Line</option>
-        <option value="Finished">Finished</option>
-    </select>
-</div>
-<div class="form-group">
-    <label for="productId">Product ID</label>
-    <input type="number" class="form-control" id="productId" @bind="productId" placeholder="Enter Product ID" />
-</div>
-<div class="form-group">
-    <label for="clientId">Client ID</label>
-    <input type="number" class="form-control" id="clientId" @bind="clientId" placeholder="Enter Client ID" />
-</div>
-<div class="form-group">
-    <label for="price">Price</label>
-    <input type="number" class="form-control" id="price" @bind="price" placeholder="Enter Price" />
-</div>
-<div class="form-group">
-    <label for="date">Date</label>
-    <input type="datetime-local" class="form-control" id="date" @bind="date" />
-</div>
+    <div class="form-group">
+        <label for="address">Address</label>
+        <input type="text" class="form-control" id="address" @bind="address" placeholder="Enter Address" />
+    </div>
+    <div class="form-group">
+        <label for="state">State</label>
+        <select class="form-control" id="state" @bind="state">
+            <option value="Wait_line">Wait Line</option>
+            <option value="Assembly_line">Assembly Line</option>
+            <option value="Finished">Finished</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="productId">Product ID</label>
+        <input type="number" class="form-control" id="productId" @bind="productId" placeholder="Enter Product ID" />
+    </div>
+    <div class="form-group">
+        <label for="clientId">Client ID</label>
+        <input type="number" class="form-control" id="clientId" @bind="clientId" placeholder="Enter Client ID" />
+    </div>
+    <div class="form-group">
+        <label for="price">Price</label>
+        <input type="number" class="form-control" id="price" @bind="price" placeholder="Enter Price" />
+    </div>
+    <div class="form-group">
+        <label for="date">Date</label>
+        <input type="datetime-local" class="form-control" id="date" @bind="date" />
+    </div>
 
-<button class="btn btn-primary" @onclick="CreateOrder">Create Order</button>
+    <button class="btn btn-primary" @onclick="CreateOrder">Create Order</button>
+}
 
 @if (!string.IsNullOrWhiteSpace(errorMessage))
 {
@@ -59,10 +69,13 @@
 {
     <div class="alert alert-success mt-3">
         <strong>Order:</strong> @order.Order_id - @order.Address - @order.State - @order.Product_id - @order.Client_id - @order.Price - @order.Date.ToString("dd-MM-yyyy HH:mm:ss")
-        <button class="btn btn-warning ml-2" @onclick="() => ShowEditModal(order)">Edit</button>
-        @if (order.State == OrderState.Finished)
+        @if (IsAdmin)
         {
-            <button class="btn btn-danger ml-2" @onclick="() => DeleteOrder(order)">Delete</button>
+            <button class="btn btn-warning ml-2" @onclick="() => ShowEditModal(order)">Edit</button>
+            @if (order.State == OrderState.Finished)
+            {
+                <button class="btn btn-danger ml-2" @onclick="() => DeleteOrder(order)">Delete</button>
+            }
         }
     </div>
 }
@@ -76,10 +89,13 @@
             {
                 <li class="list-group-item">
                     @ord.Order_id - @ord.Address - @ord.State - @ord.Product_id - @ord.Client_id - @ord.Price - @ord.Date.ToString("dd-MM-yyyy HH:mm:ss")
-                    <button class="btn btn-warning ml-2" @onclick="() => ShowEditModal(ord)">Edit</button>
-                    @if (ord.State == OrderState.Finished)
+                    @if (IsAdmin)
                     {
-                        <button class="btn btn-danger ml-2" @onclick="() => DeleteOrder(ord)">Delete</button>
+                        <button class="btn btn-warning ml-2" @onclick="() => ShowEditModal(ord)">Edit</button>
+                        @if (ord.State == OrderState.Finished)
+                        {
+                            <button class="btn btn-danger ml-2" @onclick="() => DeleteOrder(ord)">Delete</button>
+                        }
                     }
                 </li>
             }
@@ -87,7 +103,6 @@
     </div>
 }
 
-<!-- Edit Order Modal -->
 @if (isEditModalVisible)
 {
     <div class="modal show d-block" tabindex="-1">
@@ -131,7 +146,6 @@
     private int clientId;
     private decimal price;
     private DateTime date = DateTime.Now;
-    private string dateString = DateTime.Now.ToString("yyyy-MM-ddTHH:mm");
     private Order? order;
     private List<Order>? orders;
     private string? errorMessage;
@@ -140,20 +154,33 @@
     private Order? orderToEdit;
     private OrderState editOrderState;
     private string editOrderAddress = string.Empty;
+    private bool IsAdmin = false;
 
-    private async Task CreateOrder()
+    protected override async Task OnInitializedAsync()
     {
         try
         {
-            date = DateTime.Now; // Reset the date to the current date and time
+            var userSession = await ((AuthStateProvider)AuthStateProvider).GetUserSession();
+            IsAdmin = userSession?.IsAdmin ?? false;
+        }
+        catch
+        {
+            IsAdmin = false; // Default to false
+        }
+    }
+
+    private async Task CreateOrder()
+    {
+        if (!IsAdmin)
+        {
+            errorMessage = "You do not have permission to create orders.";
+            return;
+        }
+
+        try
+        {
             order = await _orders.CreateOrder(address, state, productId, clientId, price, date);
-            if (order != null)
-            {
-                // This should be done by the BL, but as a workaround, we'll do it here
-                await _assembly_lines.TryAllocateOrderToAssemblyLine(order);
-            }
-            orders = null; // Clear the list to avoid confusion
-            errorMessage = null; // Clear any previous error message
+            await GetAllOrders();
         }
         catch (Exception ex)
         {
@@ -166,8 +193,8 @@
         try
         {
             order = await _orders.GetOrder(orderId);
-            orders = null; // Clear the list to avoid confusion
-            errorMessage = null; // Clear any previous error message
+            orders = null;
+            errorMessage = null;
         }
         catch (Exception ex)
         {
@@ -180,8 +207,7 @@
         try
         {
             orders = await _orders.GetAllOrders();
-            order = null; // Clear the single order to avoid confusion
-            errorMessage = null; // Clear any previous error message
+            errorMessage = null;
         }
         catch (Exception ex)
         {
@@ -191,6 +217,8 @@
 
     private void ShowEditModal(Order ord)
     {
+        if (!IsAdmin) return;
+
         orderToEdit = ord;
         editOrderState = ord.State;
         editOrderAddress = ord.Address;
@@ -204,55 +232,33 @@
 
     private async Task EditOrder()
     {
-        if (orderToEdit != null)
+        if (!IsAdmin) return;
+
+        try
         {
-            try
+            if (orderToEdit != null)
             {
-                // Ensure the state cannot be changed if it is already Finished
-                if (orderToEdit.State == OrderState.Finished && editOrderState != OrderState.Finished)
-                {
-                    errorMessage = "Cannot change the state of a finished order.";
-                    return;
-                }
-
                 orderToEdit.State = editOrderState;
-                if (orderToEdit.State != OrderState.Finished)
-                {
-                    orderToEdit.Address = editOrderAddress;
-                }
-
+                orderToEdit.Address = editOrderAddress;
                 await _orders.UpdateOrder(orderToEdit);
-
-                if (order != null && order.Order_id == orderToEdit.Order_id)
-                {
-                    order = orderToEdit; // Update the individual order
-                }
-                else
-                {
-                    await GetAllOrders(); // Update the list of all orders
-                }
-
+                await GetAllOrders();
                 CloseEditModal();
             }
-            catch (Exception ex)
-            {
-                errorMessage = ex.Message;
-            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = ex.Message;
         }
     }
 
     private async Task DeleteOrder(Order orderToDelete)
     {
+        if (!IsAdmin) return;
+
         try
         {
-            if (orderToDelete.State != OrderState.Finished)
-            {
-                errorMessage = "Only finished orders can be deleted.";
-                return;
-            }
-
             await _orders.DeleteOrder(orderToDelete);
-            await GetAllOrders(); // Update the list of all orders
+            await GetAllOrders();
         }
         catch (Exception ex)
         {

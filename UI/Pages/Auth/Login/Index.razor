@@ -60,7 +60,7 @@
 
             var authStateProvider = (AuthStateProvider)AuthStateProvider;
             await authStateProvider.Login(user, isAdmin);
-            NavManager.NavigateTo("/", true);
+            NavManager.NavigateTo("/products-catalog", true);
         }
 
         StateHasChanged();
