@@ -1,4 +1,5 @@
 ﻿@page "/products-catalog"
+@inject AuthenticationStateProvider AuthStateProvider
 @rendermode InteractiveServer
 
 <PageTitle>Trivial Brick - Products</PageTitle>
@@ -9,19 +10,19 @@
 }
 else
 {
-    <div class="actions-container">
-        <button class="btn btn-primary" @onclick="ToggleCreateProductModal">
-            Add Product
-        </button>
-    </div>
+    @if (IsAdmin)
+    {
+        <div class="actions-container">
+            <button class="btn btn-primary" @onclick="ToggleCreateProductModal">
+                Add Product
+            </button>
+        </div>
+    }
 
     <div class="products-container">
         @foreach (var prod in products)
         {
-            <div @onclick="() => ShowBuyProductModal(prod)">
-                 @* ToDo: check if the product have stock *@
-                <ProductCard Name="@prod.Name" Price="@prod.Price" Image="@prod.Image" HaveStock="@true" />
-            </div>
+            <ProductCard Name="@prod.Name" Price="@prod.Price" Image="@prod.Image" HaveStock="@true" />
         }
     </div>
 }
@@ -45,15 +46,24 @@ else
 @code {
     private List<Product>? products;
     private bool showCreateProductModal = false;
-    private Product? selectedProduct;
-    private decimal selectedProductPrice => selectedProduct?.Price ?? 0;
-
-    private int selectedProductId => selectedProduct?.Model ?? 0;
-    private ProductModal? productModal;
+    private bool IsAdmin { get; set; }
+    private bool isInitialized = false;
 
     protected override async Task OnInitializedAsync()
     {
         products = await _catalogs.GetAllProducts();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && !isInitialized)
+        {
+            var userSession = await ((AuthStateProvider)AuthStateProvider).GetUserSession();
+            IsAdmin = userSession?.IsAdmin ?? false;
+
+            isInitialized = true;
+            StateHasChanged();
+        }
     }
 
     private void ToggleCreateProductModal()
