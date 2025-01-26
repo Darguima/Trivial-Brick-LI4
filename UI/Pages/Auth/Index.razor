@@ -1,0 +1,43 @@
+@page "/"
+@rendermode InteractiveServer
+@inject NavigationManager NavManager
+
+<PageTitle>@(showLogin ? "Login" : "Register")</PageTitle>
+
+<div class="auth-container d-flex justify-content-center align-items-center" style="height: 100vh;">
+    <div class="card" style="width: 400px; padding: 20px;">
+        <h3 class="text-center mb-4">@((showLogin) ? "Login" : "Signup")</h3>
+        
+        @if (showLogin)
+        {
+            <Login OnSuccessfulLogin="HandleSuccessfulLogin" />
+        }
+        else
+        {
+            <Signup OnSuccessfulRegister="HandleSuccessfulRegister" />
+        }
+
+        <button class="btn btn-link w-100 mt-3" @onclick="ToggleForm">
+            Switch to @((showLogin) ? "Signup" : "Login")
+        </button>
+    </div>
+</div>
+
+@code {
+    private bool showLogin = true;
+
+    private void ToggleForm()
+    {
+        showLogin = !showLogin;
+    }
+
+    private void HandleSuccessfulLogin()
+    {
+        NavManager.NavigateTo("/products-catalog", true);
+    }
+
+    private void HandleSuccessfulRegister()
+    {
+        NavManager.NavigateTo("/products-catalog", true);
+    }
+}
