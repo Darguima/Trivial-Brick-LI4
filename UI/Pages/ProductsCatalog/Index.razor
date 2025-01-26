@@ -22,7 +22,9 @@ else
     <div class="products-container">
         @foreach (var prod in products)
         {
-            <ProductCard Name="@prod.Name" Price="@prod.Price" Image="@prod.Image" HaveStock="@true" />
+            <div @onclick="() => ShowBuyProductModal(prod)">
+                <ProductCard Name="@prod.Name" Price="@prod.Price" Image="@prod.Image" HaveStock="@true" />
+            </div>
         }
     </div>
 }
@@ -32,11 +34,25 @@ else
     <CreateProductModal ToggleModal="ToggleCreateProductModal" />
 }
 
+<ProductModal 
+    @ref="productModal" 
+    Name="@selectedProduct?.Name" 
+    ProductId="@selectedProductId" 
+    Price="@selectedProductPrice" 
+    Image="@selectedProduct?.Image" 
+    HaveStock="@true" 
+    OnClose="OnModalClose" 
+/>
+
 @code {
     private List<Product>? products;
     private bool showCreateProductModal = false;
     private bool IsAdmin { get; set; }
     private bool isInitialized = false;
+    private Product? selectedProduct;
+    private int selectedProductId => selectedProduct?.Model ?? 0;
+    private decimal selectedProductPrice => selectedProduct?.Price ?? 0;
+    private ProductModal? productModal;
 
     protected override async Task OnInitializedAsync()
     {
@@ -58,5 +74,16 @@ else
     private void ToggleCreateProductModal()
     {
         showCreateProductModal = !showCreateProductModal;
+    }
+
+    private void ShowBuyProductModal(Product product)
+    {
+        selectedProduct = product;
+        productModal?.ShowModal();
+    }
+
+    private void OnModalClose()
+    {
+        selectedProduct = null;
     }
 }
