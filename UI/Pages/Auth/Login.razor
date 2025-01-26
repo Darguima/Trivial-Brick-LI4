@@ -69,7 +69,7 @@
             var authStateProvider = (AuthStateProvider)AuthStateProvider;
             await authStateProvider.Login(user, isAdmin);
             await OnSuccessfulLogin.InvokeAsync();
-            NavManager.NavigateTo("/products-catalog", true);
+            NavigationManager.NavigateTo("/products-catalog", true);
         }
 
         StateHasChanged();
