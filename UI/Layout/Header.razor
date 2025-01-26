@@ -46,7 +46,7 @@
         }
 
         <div class="header-option">
-            <NavLink class="nav-link notification-button" @onclick="ToggleNotifications">
+            <NavLink class="nav-link notification-button" @onclick="async () => await ToggleNotifications()">
                 <span class="bi bi-bell-fill" aria-hidden="true" style="color: black;"></span>
             </NavLink>
         </div>
@@ -96,11 +96,11 @@
         ClientId = userSession?.ID ?? string.Empty;
     }
 
-    private void ToggleNotifications()
+    private async Task ToggleNotifications()
     {
         if (notificationComponent != null)
         {
-            notificationComponent.ToggleNotifications(ClientId, IsAdmin);
+            await notificationComponent.ToggleNotifications(ClientId, IsAdmin);
         }
     }
 

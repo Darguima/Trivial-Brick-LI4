@@ -4,7 +4,7 @@
 <div class="notification-container" style="display: @(showNotifications ? "block" : "none")">
     <div class="notification-header">
         <h4>Notifications</h4>
-        <button class="close-button" @onclick="ToggleNotificationsHandler">X</button>
+        <button class="close-button" @onclick="() => ToggleNotificationsHandler()">X</button>
     </div>
     <ul class="list-group">
         @if (notifications != null && notifications.Count > 0)
@@ -60,16 +60,20 @@
         }
     }
 
-    private void ToggleNotificationsHandler()
+    private async Task ToggleNotificationsHandler()
     {
-        ToggleNotifications(ClientId, IsAdmin);
+        await ToggleNotifications(ClientId, IsAdmin);
     }
 
-    public void ToggleNotifications(string clientId, bool isAdmin)
+    public async Task ToggleNotifications(string clientId, bool isAdmin)
     {
         ClientId = clientId;
         IsAdmin = isAdmin;
         showNotifications = !showNotifications;
+        if (showNotifications)
+        {
+            await LoadNotifications();
+        }
         StateHasChanged(); // Ensure the UI is updated
     }
 }
