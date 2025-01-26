@@ -1,5 +1,7 @@
 ﻿@page "/orders"
 @rendermode InteractiveServer
+@inject NavigationManager NavManager
+@inject AuthStateProvider AuthStateProvider
 
 <PageTitle>Orders</PageTitle>
 
@@ -161,7 +163,20 @@
         try
         {
             var userSession = await ((AuthStateProvider)AuthStateProvider).GetUserSession();
-            IsAdmin = userSession?.IsAdmin ?? false;
+            var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+            bool IsAuthenticated = authState.User.Identity?.IsAuthenticated ?? false;
+            if (!IsAuthenticated)
+            {
+                NavManager.NavigateTo("/");
+            }
+            else
+            {
+                if (userSession != null)
+                {
+                    IsAdmin = userSession.IsAdmin;
+                }
+
+            }
         }
         catch
         {

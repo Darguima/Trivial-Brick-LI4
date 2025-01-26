@@ -1,5 +1,7 @@
 @page "/stock"
 @rendermode InteractiveServer
+@inject AuthStateProvider AuthStateProvider
+@inject NavigationManager NavigationManager
 
 <PageTitle>Stock</PageTitle>
 
@@ -98,6 +100,25 @@
     private bool isEditModalVisible = false;
     private Part? partToEdit;
     private int editPartStock;
+
+    private bool isInitialized = false;
+
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && !isInitialized)
+        {
+            var userSession = await ((AuthStateProvider)AuthStateProvider).GetUserSession();
+            var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+            bool IsAuthenticated = authState.User.Identity?.IsAuthenticated ?? false;
+            if (!IsAuthenticated)
+            {
+                NavigationManager.NavigateTo("/");
+            }
+            isInitialized = true;
+            StateHasChanged();
+        }
+    }
 
     private async Task AddPart()
     {
