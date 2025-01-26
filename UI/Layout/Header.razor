@@ -64,7 +64,11 @@
             </div>
         }
 
-        <button class="btn btn-secondary" @onclick="Logout">Logout</button>
+        <div class="header-option">
+            <NavLink class="nav-link" href="" @onclick="Logout">
+                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true">Logout</span> 
+            </NavLink>
+        </div>
     }
     else
     {

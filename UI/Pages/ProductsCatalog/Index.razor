@@ -10,16 +10,18 @@
 else
 {
     <div class="actions-container">
-    <button class="btn btn-primary" @onclick="ToggleCreateProductModal">
-        Add Product
-    </button>
-</div>
+        <button class="btn btn-primary" @onclick="ToggleCreateProductModal">
+            Add Product
+        </button>
+    </div>
 
     <div class="products-container">
-    @foreach (var prod in products)
+        @foreach (var prod in products)
         {
-            // ToDo: check if the product have stock
-            <ProductCard Name="@prod.Name" Price="@prod.Price" Image="@prod.Image" HaveStock="@true" />
+            <div @onclick="() => ShowBuyProductModal(prod)">
+                 @* ToDo: check if the product have stock *@
+                <ProductCard Name="@prod.Name" Price="@prod.Price" Image="@prod.Image" HaveStock="@true" />
+            </div>
         }
     </div>
 }
@@ -29,9 +31,25 @@ else
     <CreateProductModal ToggleModal="ToggleCreateProductModal" />
 }
 
+<ProductModal 
+    @ref="productModal" 
+    Name="@selectedProduct?.Name" 
+    ProductId="@selectedProductId" 
+    Price="@selectedProductPrice" 
+    Image="@selectedProduct?.Image" 
+    HaveStock="@true" 
+    OnClose="OnModalClose" 
+/>
+
+
 @code {
     private List<Product>? products;
     private bool showCreateProductModal = false;
+    private Product? selectedProduct;
+    private decimal selectedProductPrice => selectedProduct?.Price ?? 0;
+
+    private int selectedProductId => selectedProduct?.Model ?? 0;
+    private ProductModal? productModal;
 
     protected override async Task OnInitializedAsync()
     {
@@ -42,4 +60,16 @@ else
     {
         showCreateProductModal = !showCreateProductModal;
     }
+
+    private void ShowBuyProductModal(Product product)
+    {
+        selectedProduct = product;
+        productModal?.ShowModal();
+    }
+
+    private void OnModalClose()
+    {
+        selectedProduct = null;
+    }
+
 }
