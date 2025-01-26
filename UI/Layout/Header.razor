@@ -1,6 +1,4 @@
-﻿@inject AuthStateProvider AuthStateProvider
-@inject NavigationManager NavManager
-@rendermode InteractiveServer
+﻿@rendermode InteractiveServer
 
 <header>
 
@@ -47,13 +45,13 @@
 
         <div class="header-option">
             <NavLink class="nav-link notification-button" @onclick="async () => await ToggleNotifications()">
-                <span class="bi bi-bell-fill" aria-hidden="true" style="color: black;"></span>
+                <span class="bi bi-bell-fill" aria-hidden="true" style="color: black;">🔔</span>
             </NavLink>
         </div>
 
         <div class="header-option">
             <NavLink class="nav-link" href="" @onclick="Logout">
-                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true">Logout</span> 
+                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true">Logout</span>
             </NavLink>
         </div>
     }
