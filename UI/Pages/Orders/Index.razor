@@ -173,6 +173,12 @@ else
         {
             if (orderToEdit != null)
             {
+                if (orderToEdit.State == OrderState.Finished)
+                {
+                    errorMessage = "Cannot edit an order that is already finished.";
+                    return;
+                }
+                
                 orderToEdit.State = editOrderState;
                 orderToEdit.Address = editOrderAddress;
                 await _orders.UpdateOrder(orderToEdit);
