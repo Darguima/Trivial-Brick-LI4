@@ -4,6 +4,12 @@
     background-color: #F59B5E;
 }
 
+.just-dont-be-dumb{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
 .custom-edit-state-button {
     background-color: #FFC107;
     color: #000; 
