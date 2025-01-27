@@ -1,0 +1,73 @@
+<div class="modal-backdrop fade show"></div>
+
+<div class="modal show d-block" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                <p><strong>Product Name:</strong> @ProductOrd?.Price</p>
+                <p><strong>Price:</strong> @OrderDetails?.Price</p>
+                <p><strong>ID :</strong> @OrderDetails?.Address</p>
+                <p><strong>Date:</strong> @OrderDetails?.Date.ToString("dd-MM-yyyy HH:mm:ss")</p>
+                <p><strong>NIF:</strong> @OrderDetails?.Client_id</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" @onclick="CloseModal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@code {
+    [Parameter] public int OrderId { get; set; } // Recebe o ID da ordem
+    [Parameter] public EventCallback OnClose { get; set; } // Callback para fechar o modal
+
+    private Order? OrderDetails { get; set; }
+    private Product? ProductOrd { get; set; }
+    private string? ErrorMessage { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadData();
+    }
+
+    private async Task LoadData()
+    {
+        try
+        {
+            ErrorMessage = null;
+
+            // Step 1: Fetch the order details using OrderId
+            OrderDetails = await _orders.GetOrder(OrderId);
+
+            if (OrderDetails == null)
+            {
+                ErrorMessage = "Order not found.";
+                return; // Exit early if no order is found
+            }
+
+            // Step 2: Fetch the product details for the order
+            
+            var allProducts = await _catalogs.GetAllProducts();
+            ProductOrd = allProducts?.FirstOrDefault(pro => pro.Model == OrderDetails.Product_id);
+
+            if (ProductOrd == null)
+            {
+                ErrorMessage = "Product not found for the specified order.";
+            }
+            
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = ex.Message;
+        }
+    }
+
+    private void CloseModal()
+    {
+        OnClose.InvokeAsync();
+    }
+}
+
+
+

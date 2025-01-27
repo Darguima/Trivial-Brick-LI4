@@ -1,0 +1,81 @@
+@inject BLOrders _orders
+@rendermode InteractiveServer
+
+<div class="modal-backdrop fade show"></div>
+
+<div class="modal show d-block" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                @if (IsLoading)
+                {
+                    <p>Loading invoice...</p>
+                }
+                else if (!string.IsNullOrWhiteSpace(ErrorMessage))
+                {
+                    <div class="alert alert-danger">@ErrorMessage</div>
+                }
+                else if (Invoice != null)
+                {
+                    <div>
+                        <p><strong>Invoice ID:</strong> @Invoice.Invoice_id</p>
+                        <p><strong>Date:</strong> @Invoice.Datetime.ToString("dd-MM-yyyy HH:mm")</p>
+                        <p><strong>Client ID:</strong> @Invoice.Client_id</p>
+                    </div>
+                }
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" @onclick="CloseModal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@code {
+    [Parameter] public int OrderId { get; set; } // Recebe o ID da ordem
+    [Parameter] public EventCallback OnClose { get; set; } // Callback para fechar o modal
+
+    private Invoice? Invoice { get; set; }
+    private bool IsLoading { get; set; } = true;
+    private string? ErrorMessage { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadInvoice();
+    }
+
+    private async Task LoadInvoice()
+    {
+        try
+        {
+            // Chama o método GetAllInvoices e itera sobre as invoices
+            IsLoading = true;
+            ErrorMessage = null;
+
+            var allInvoices = await _orders.GetAllInvoices(); 
+            Invoice = allInvoices?.FirstOrDefault(inv => inv.Order_id == OrderId); 
+
+            if (Invoice == null)
+            {
+                ErrorMessage = "Invoice not found for the specified order.";
+            }
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = ex.Message;
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    private async Task CloseModal()
+    {
+        if (OnClose.HasDelegate)
+        {
+            await OnClose.InvokeAsync();
+        }
+    }
+}

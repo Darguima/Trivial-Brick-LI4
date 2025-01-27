@@ -8,7 +8,7 @@
     <div class="orders-container mt-3">
         @foreach (var ord in orders)
         {
-            <OrderCard Order="ord" OnEdit="ShowEditModal" OnDelete="DeleteOrder" />
+            <OrderCard Order="ord" OnViewInvoice="ShowInvoiceModal" OnCheckReceipt="ShowReceiptModal" OnEdit="ShowEditModal" OnDelete="DeleteOrder" />
         }
     </div>
 }
@@ -50,6 +50,16 @@ else
     </div>
 }
 
+@if (isReceiptModalVisible)
+{
+    <ReceiptModal OrderId="orderToCheck" OnClose="CloseReceiptModal" />
+}
+
+@if (isInvoiceModalVisible)
+{
+    <InvoiceComponent OrderId="orderToView" OnClose="CloseInvoiceModal" />
+}
+
 @code {
     /*
     private int orderId;
@@ -69,6 +79,12 @@ else
     private OrderState editOrderState;
     private string editOrderAddress = string.Empty;
     private bool IsAdmin = false;
+
+    private bool isInvoiceModalVisible = false;
+    private int orderToView;
+
+    private bool isReceiptModalVisible = false;
+    private int orderToCheck;
 
     protected override async Task OnInitializedAsync()
     {
@@ -160,6 +176,28 @@ else
     private void CloseEditModal()
     {
         isEditModalVisible = false;
+    }
+
+    private void ShowInvoiceModal(Order order)
+    {
+        orderToView = order.Order_id;  
+        isInvoiceModalVisible = true;   
+    }
+
+    private void CloseInvoiceModal()
+    {
+        isInvoiceModalVisible = false; 
+    }
+
+    private void ShowReceiptModal(Order order)
+    {
+        orderToCheck = order.Order_id;  
+        isReceiptModalVisible = true;   
+    }
+
+    private void CloseReceiptModal()
+    {
+        isReceiptModalVisible = false; 
     }
 
     private async Task EditOrder()

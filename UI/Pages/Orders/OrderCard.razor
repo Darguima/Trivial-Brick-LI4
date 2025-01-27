@@ -16,11 +16,13 @@
         </div>
 
         <div class="text-end">
-            <button class="btn btn-primary edit-button" @onclick="() => OnEdit.InvokeAsync(Order)">Edit</button>
+            <button class="btn btn-primary edit-button me-2" @onclick="() => OnEdit.InvokeAsync(Order)">Edit</button>
             @if (Order.State == OrderState.Finished)
             {
-                <button class="btn custom-delete-button" @onclick="() => OnDelete.InvokeAsync(Order)">Delete</button>
+                <button class="btn custom-delete-button me-2" @onclick="() => OnDelete.InvokeAsync(Order)">Delete</button>
             }
+            <button class="btn btn-primary invoice-button me-2" @onclick="() => OnViewInvoice.InvokeAsync(Order)">View Invoice</button>
+            <button class="btn btn-primary receipt-button me-2" @onclick="() => OnCheckReceipt.InvokeAsync(Order)">Check Receipt</button>
         </div>
     </div>
 </div>
@@ -34,4 +36,10 @@
 
     [Parameter]
     public EventCallback<Order> OnDelete { get; set; }
+
+    [Parameter]
+    public EventCallback<Order> OnViewInvoice { get; set; } 
+
+    [Parameter]
+    public EventCallback<Order> OnCheckReceipt { get; set; } 
 }
