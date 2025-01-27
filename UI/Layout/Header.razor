@@ -1,6 +1,4 @@
-﻿@inject AuthStateProvider AuthStateProvider
-@inject NavigationManager NavManager
-@rendermode InteractiveServer
+﻿@rendermode InteractiveServer
 
 <header>
 
@@ -29,7 +27,6 @@
 
         @if (IsAdmin)
         {
-
             <div class="header-option">
                 <NavLink class="nav-link" href="/stock">
                     <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true">Stock</span>
@@ -37,9 +34,10 @@
             </div>
         }
 
+
         <div class="header-option">
-            <NavLink class="nav-link notification-button" @onclick="ToggleNotifications">
-                <span class="bi bi-bell-fill" aria-hidden="true"></span>
+            <NavLink class="nav-link notification-button" @onclick="async () => await ToggleNotifications()">
+                <span>🔔</span>
             </NavLink>
         </div>
 
@@ -51,13 +49,14 @@
     }
 </header>
 
-<NotificationComponent @ref="notificationComponent" />
+<NotificationComponent @ref="notificationComponent" ClientId="@ClientId" IsAdmin="@IsAdmin" />
 
 @code {
     private NotificationComponent? notificationComponent;
     private bool IsAuthenticated { get; set; }
     private bool IsAdmin { get; set; }
     private bool _isInitialized = false;
+    private string ClientId { get; set; } = string.Empty;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -84,13 +83,14 @@
 
         var userSession = await AuthStateProvider.GetUserSession();
         IsAdmin = userSession?.IsAdmin ?? false;
+        ClientId = userSession?.ID ?? string.Empty;
     }
 
-    private void ToggleNotifications()
+    private async Task ToggleNotifications()
     {
         if (notificationComponent != null)
         {
-            notificationComponent.ToggleNotifications();
+            await notificationComponent.ToggleNotifications(ClientId, IsAdmin);
         }
     }
 
@@ -102,7 +102,7 @@
         }
 
         await UpdateAuthenticationState();
-        NavManager.NavigateTo("/", true);
+        NavigationManager.NavigateTo("/", true);
     }
 
     public void Dispose()

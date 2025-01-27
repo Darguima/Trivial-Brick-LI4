@@ -35,6 +35,7 @@ else
 
 <ProductModal 
     @ref="productModal" 
+    ClientId="@ClientId"
     Name="@selectedProduct?.Name" 
     ProductId="@selectedProductId" 
     Price="@selectedProductPrice" 
@@ -53,6 +54,8 @@ else
     private decimal selectedProductPrice => selectedProduct?.Price ?? 0;
     private ProductModal? productModal;
 
+    private string ClientId { get; set; } = string.Empty;
+
     protected override async Task OnInitializedAsync()
     {
         products = await _catalogs.GetAllProducts();
@@ -63,8 +66,17 @@ else
         if (firstRender && !isInitialized)
         {
             var userSession = await ((AuthStateProvider)AuthStateProvider).GetUserSession();
-            IsAdmin = userSession?.IsAdmin ?? false;
-
+            var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+            bool IsAuthenticated = authState.User.Identity?.IsAuthenticated ?? false;
+            if (!IsAuthenticated)
+            {
+                NavigationManager.NavigateTo("/");
+            }
+            else
+            {
+            bool IsAdmin = userSession?.IsAdmin ?? false;
+            }
+            ClientId = userSession?.ID ?? string.Empty;
             isInitialized = true;
             StateHasChanged();
         }

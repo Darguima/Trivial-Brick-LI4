@@ -91,6 +91,35 @@ else
         try
         {
             var userSession = await ((AuthStateProvider)AuthStateProvider).GetUserSession();
+            var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+            bool IsAuthenticated = authState.User.Identity?.IsAuthenticated ?? false;
+            if (!IsAuthenticated)
+            {
+                NavigationManager.NavigateTo("/");
+            }
+            else
+            {
+                if (userSession != null)
+                {
+                    IsAdmin = userSession.IsAdmin;
+                }
+
+            }
+        }
+        catch
+        {
+            IsAdmin = false; // Default to false
+        }
+        await GetAllOrders(); // Load data when the page initializes
+        
+    }
+
+    /*
+    private async Task CreateOrder()
+    {
+        try
+        {
+            var userSession = await ((AuthStateProvider)AuthStateProvider).GetUserSession();
             IsAdmin = userSession?.IsAdmin ?? false;
         }
         catch
