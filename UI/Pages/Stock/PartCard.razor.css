@@ -1,0 +1,37 @@
+.custom-card {
+    border: 1px solid #000;
+    background-color: #F59B5E;
+    width: 18rem;
+    height: 21rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* Ensure content stays within the card */
+}
+
+.custom-card-img {
+    object-fit: contain;
+    height: 12rem;
+    width: 100%;
+}
+
+.card-body {
+    display: flex;
+    flex-direction: column;
+    justify-content: center; 
+    align-items: center; 
+    flex-grow: 1;
+    text-align: center; 
+}
+
+.custom-card-btn {
+    background-color: #FFC107;
+    color: #000; 
+    border: 1px solid #000;
+    transition: background-color 0.3s ease;
+    margin-left: auto;
+    margin-bottom: 10px;
+}
+
+.custom-card-btn:hover {
+    background-color: #cc9f0a; 
+}

@@ -1,0 +1,69 @@
+@if (IsVisible && PartToEdit != null)
+{
+    <div class="modal show d-block" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="editPartStock">Quantity</label>
+                        <input type="number" class="form-control" id="editPartStock" @bind="editPartStock" />
+                    </div>
+                    <div class="form-group">
+                        <label for="imageUrl">Image URL</label>
+                        <input type="text" id="imageUrl" class="form-control" @bind="imageUrl" />
+                        <small class="form-text text-muted">Current URL: @PartToEdit.Image</small>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="Close">Cancel</button>
+                    <button type="button" class="btn btn-danger" @onclick="Delete">Delete</button>
+                    <button type="button" class="btn btn-primary" @onclick="Save">Save Changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public bool IsVisible { get; set; }
+    [Parameter] public Part? PartToEdit { get; set; }
+    [Parameter] public EventCallback OnClose { get; set; }
+    [Parameter] public EventCallback<Part> OnSave { get; set; }
+    [Parameter] public EventCallback<Part> OnDelete { get; set; }
+
+    private int editPartStock;
+    private string? imageUrl;
+
+    protected override void OnParametersSet()
+    {
+        if (PartToEdit != null)
+        {
+            editPartStock = PartToEdit.Stock;
+            imageUrl = PartToEdit.Image;
+        }
+    }
+
+    private async Task Save()
+    {
+        if (PartToEdit != null)
+        {
+            // Update the image URL and stock
+            PartToEdit.Image = imageUrl ?? string.Empty; // If imageUrl is null, assign an empty string
+            PartToEdit.Stock = editPartStock;
+            await OnSave.InvokeAsync(PartToEdit);
+        }
+    }
+
+    private async Task Delete()
+    {
+        if (PartToEdit != null)
+        {
+            await OnDelete.InvokeAsync(PartToEdit);
+        }
+    }
+
+    private async Task Close()
+    {
+        await OnClose.InvokeAsync();
+    }
+}

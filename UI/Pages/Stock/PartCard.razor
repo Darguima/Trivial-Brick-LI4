@@ -1,0 +1,13 @@
+<div class="card custom-card">
+    <img src="@Part.Image" class="card-img-top custom-card-img" alt="@Part.Part_id" />
+    <div class="card-body">
+        <h5 class="card-title">@Part.Part_id</h5>
+        <p class="card-text">Quantity: @Part.Stock</p>
+        <button class="btn custom-card-btn" @onclick="() => OnEdit.InvokeAsync(Part)">Edit</button>
+    </div>
+</div>
+
+@code {
+    [Parameter] public Part Part { get; set; } = default!;
+    [Parameter] public EventCallback<Part> OnEdit { get; set; }
+}
