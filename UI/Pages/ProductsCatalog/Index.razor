@@ -41,6 +41,7 @@ else
     Price="@selectedProductPrice" 
     Image="@selectedProduct?.Image" 
     HaveStock="@true" 
+    IsAdmin="@IsAdmin"
     OnClose="OnModalClose" 
 />
 
@@ -96,9 +97,10 @@ else
         productModal?.ShowModal();
     }
 
-    private void OnModalClose()
+    private async Task OnModalClose()
     {
         selectedProduct = null;
+        await LoadProducts();
 
 
     }

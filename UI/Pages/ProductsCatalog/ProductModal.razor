@@ -18,11 +18,49 @@
         <div class="button-container">
             <button class="btn-cancel" @onclick="CloseModal">Cancel</button>
             <button class="btn-buy" @onclick="ShowPaymentModal">Buy</button>
+            @if (IsAdmin)
+            {
+                <button class="btn-edit" @onclick="ShowEditModal">Edit</button>
+                <button class="btn-delete" @onclick="DeleteProduct">Delete</button>
+            }
         </div>
     </div>
 </div>
 
 <PaymentModal @ref="paymentModal" OnClose="OnPaymentModalClose" OnPaymentSubmitted="HandlePaymentSubmitted" />
+
+@if (isEditModalVisible)
+{
+    <div class="modal-backdrop fade show"></div>
+    <div class="modal show d-block" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Product</h5>
+                    <button type="button" class="close" @onclick="CloseEditModal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="editProductName">Name</label>
+                        <input type="text" class="form-control" id="editProductName" @bind="editProductName" />
+                    </div>
+                    <div class="form-group">
+                        <label for="editProductPrice">Price</label>
+                        <input type="number" class="form-control" id="editProductPrice" @bind="editProductPrice" />
+                    </div>
+                    <div class="form-group">
+                        <label for="editProductImage">Image</label>
+                        <InputFile class="form-control" id="editProductImage" OnChange="OnImageSelected" />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="CloseEditModal">Close</button>
+                    <button type="button" class="btn btn-primary" @onclick="SaveProductChanges">Save changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
 
 @if (!string.IsNullOrWhiteSpace(errorMessage))
 {
@@ -33,7 +71,6 @@
 
 @code {
     [Parameter]
-
     public required string ClientId { get; set; }
 
     [Parameter]
@@ -52,12 +89,19 @@
     public bool HaveStock { get; set; } = true;
 
     [Parameter]
+    public bool IsAdmin { get; set; }
+
+    [Parameter]
     public EventCallback OnClose { get; set; }
 
     private string ModalClass { get; set; } = "hide";
 
     private string? errorMessage;
     private PaymentModal? paymentModal;
+    private bool isEditModalVisible = false;
+    private string editProductName = string.Empty;
+    private decimal editProductPrice;
+    private IBrowserFile? editProductImage;
 
     public void ShowModal()
     {
@@ -95,6 +139,94 @@
                 await _assembly_lines.TryAllocateOrderToAssemblyLine(order);
             }
             CloseModal();
+        }
+        catch (Exception ex)
+        {
+            errorMessage = ex.Message;
+        }
+    }
+
+    private void ShowEditModal()
+    {
+        editProductName = Name;
+        editProductPrice = Price;
+        isEditModalVisible = true;
+    }
+
+    private void CloseEditModal()
+    {
+        isEditModalVisible = false;
+    }
+
+    private Task OnImageSelected(InputFileChangeEventArgs e)
+    {
+        editProductImage = e.File;
+        return Task.CompletedTask;
+    }
+
+    private async Task SaveProductChanges()
+    {
+        try
+        {
+            string? imagePath = null;
+            if (editProductImage != null)
+            {
+                imagePath = await UploadImage(editProductImage);
+            }
+            var product = await _catalogs.GetProduct(ProductId);
+            if (product != null)
+            {
+                product.Name = editProductName;
+                product.Price = editProductPrice;
+                if (imagePath != null)
+                {
+                    product.Image = imagePath;
+                }
+                await _catalogs.UpdateProduct(product);
+                Name = product.Name;
+                Price = product.Price;
+                Image = product.Image;
+                CloseEditModal();
+            }
+        
+        }
+        catch (Exception ex)
+        {
+            errorMessage = ex.Message;
+        }
+    }
+
+    private async Task<string> UploadImage(IBrowserFile image)
+    {
+        string relativeFolderPath = Path.Combine("uploads", "images", "products");
+        string fullPath = Path.Combine(Environment.CurrentDirectory, "wwwroot", relativeFolderPath);
+        string imageName = Guid.NewGuid().ToString("N") + Path.GetExtension(image.Name);
+        string imageRelativePath = Path.Combine(relativeFolderPath, imageName);
+        string imageFullPath = Path.Combine(fullPath, imageName);
+
+        if (!Directory.Exists(fullPath))
+        {
+            Directory.CreateDirectory(fullPath);
+        }
+
+        await using FileStream fs = new(imageFullPath, FileMode.Create);
+        await image.OpenReadStream(maxAllowedSize: 10 * 1024 * 1024).CopyToAsync(fs);
+
+        return imageRelativePath;
+    }
+
+    private async Task DeleteProduct()
+    {
+        try
+        {
+            var product = await _catalogs.GetProduct(ProductId);
+            if (product != null)
+            {
+                await _catalogs.RemoveProduct(product);
+                CloseModal();
+            }
+
+            await OnClose.InvokeAsync();
         }
         catch (Exception ex)
         {
