@@ -8,7 +8,7 @@
     <div class="orders-container mt-3">
         @foreach (var ord in orders)
         {
-            <OrderCard Order="ord" OnEdit="ShowEditModal" OnDelete="DeleteOrder" OnViewInvoice="ShowInvoiceModal" />
+            <OrderCard Order="ord" OnEdit="ShowEditModal" OnDelete="DeleteOrder" OnViewInvoice="ShowInvoiceModal" OnCheckState="ShowCheckStateModal" />
         }
     </div>
 }
@@ -55,6 +55,11 @@ else
     <InvoiceModal OrderId="selectedOrderId" OnClose="CloseInvoiceModal" />
 }
 
+@if (isCheckStateModalVisible)
+{
+    <CheckStateModal Order="selectedOrder" OnClose="CloseCheckStateModal" />
+}
+
 @code {
     private DateTime date = DateTime.Now;
     private List<Order>? orders;
@@ -62,8 +67,10 @@ else
 
     private bool isEditModalVisible = false;
     private bool isInvoiceModalVisible = false;
+    private bool isCheckStateModalVisible = false;
     private Order? orderToEdit;
     private int selectedOrderId;
+    private Order? selectedOrder;
     private OrderState editOrderState;
     private string editOrderAddress = string.Empty;
     private bool IsAdmin = false;
@@ -107,6 +114,7 @@ else
                     orders = await _orders.GetOrdersByClient(int.Parse(userSession.ID));
                 }
             }
+            orders = orders?.OrderByDescending(o => o.Order_id).ToList();
             errorMessage = null;
         }
         catch (Exception ex)
@@ -130,15 +138,31 @@ else
         isEditModalVisible = false;
     }
 
-    private void ShowInvoiceModal(Order order)
+    private async Task ShowInvoiceModal(Order order)
     {
         selectedOrderId = order.Order_id;
         isInvoiceModalVisible = true;
+        await GetAllOrders();
     }
 
-    private void CloseInvoiceModal()
+    private async Task CloseInvoiceModal()
     {
         isInvoiceModalVisible = false;
+        await GetAllOrders();
+    }
+
+    private async Task ShowCheckStateModal(Order order)
+    {
+        selectedOrder = order;
+        isCheckStateModalVisible = true;
+        await GetAllOrders();
+    }
+
+    private async Task CloseCheckStateModal()
+    {   
+        await GetAllOrders();
+        isCheckStateModalVisible = false;
+        
     }
 
     private async Task EditOrder()

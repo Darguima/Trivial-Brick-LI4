@@ -75,6 +75,12 @@ public class BLAssemblyLines
         await assemblyLineRepository.Remove(assemblyLine);
     }
 
+    public async Task<AssemblyLine?> GetAssemblyLineByOrder(int order_id)
+    {
+        var line = await assemblyLineRepository.GetLineByOrder(order_id);
+        return line;
+    }
+
     public async Task TryAllocateOrderToAssemblyLine(Order order)
     {
         var freeLines = await assemblyLineRepository.FindAllActiveAndFree();

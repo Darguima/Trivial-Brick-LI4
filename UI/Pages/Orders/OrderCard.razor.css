@@ -26,19 +26,51 @@
 }
 
 
+.button-group {
+    display: flex;
+    justify-content: center; /* Alinha os botões no centro */
+    gap: 12px; /* Espaçamento horizontal entre os botões */
+    margin-top: 15px; /* Espaçamento acima do grupo */
+}
+
 .check-invoice-button {
     background-color: #FA812F; 
-    color: black; 
+    color: black;
     border-color: black;
     border-width: 1px;
     border-style: solid;
-    border-radius: 10px; 
-    padding: 0.5rem 1rem; 
-    font-size: 1rem; 
-    cursor: pointer; 
-    transition: background-color 0.3s ease; 
+    border-radius: 10px;
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
 }
 
 .check-invoice-button:hover {
-    background-color: #E6731F; 
+    background-color: #E6731F;
+}
+
+.check-state-button {
+    background-color: #FA812F; 
+    color: black; 
+    border-color: black; 
+    border-width: 1px;
+    border-style: solid;
+    border-radius: 10px;
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    display: flex; 
+    align-items: center; 
+    gap: 8px; 
+}
+
+.check-state-button i {
+    font-size: 1.2rem; 
+    color: black
+}
+
+.check-state-button:hover {
+    background-color: #E6731F;
 }

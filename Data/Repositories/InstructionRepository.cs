@@ -42,5 +42,11 @@ namespace TrivialBrick.Data.Repositories
             string sql = "delete from instructions where part_id = @Part_id and product_id = @Product_id";
             return _db.SaveData(sql, instruction);
         }
+
+        public Task <List<Instruction>> FindInstructionsByProduct(int productId)
+        {
+            string sql = "select * from instructions where product_id = @productId";
+            return _db.LoadData<Instruction, dynamic>(sql, new { productId });
+        }
     }
 }

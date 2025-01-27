@@ -56,5 +56,12 @@ namespace TrivialBrick.Data.Repositories
             string sql = "select * from assembly_lines where order_id is not null";
             return await _db.LoadData<AssemblyLine, dynamic>(sql, new { });
         }
+
+        public async Task<AssemblyLine?> GetLineByOrder(int orderId)
+        {
+            string sql = "select * from assembly_lines where order_id = @orderId";
+            var assemblyLines = await _db.LoadData<AssemblyLine, dynamic>(sql, new { orderId });
+            return assemblyLines?.FirstOrDefault();
+        }
     }
 }
