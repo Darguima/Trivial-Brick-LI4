@@ -79,6 +79,12 @@ public class BLOrders(OrderRepository orderRepository, NotificationRepository no
         await invoiceRepository.Remove(invoice);
     }
 
+    public async Task<Invoice?> GetInvoiceByOrder(int order_id)
+    {
+        return await invoiceRepository.FindByOrder(order_id);
+    }
+
+
     public async Task<Notification?> CreateNotification(string message, DateTime datetime, int client_id, int order_id)
     {
         return await notificationRepository.Add(message, datetime, client_id, order_id);

@@ -1,0 +1,100 @@
+@rendermode InteractiveServer
+
+<div class="modal-backdrop fade show"></div>
+
+<div class="modal show d-block" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                @if (IsLoading)
+                {
+                    <p>Loading invoice...</p>
+                }
+                else if (!string.IsNullOrWhiteSpace(ErrorMessage))
+                {
+                    <div class="alert alert-danger">@ErrorMessage</div>
+                }
+                else if (Invoice != null)
+                {
+                    <div>
+                        <p><strong>Invoice ID:</strong> @Invoice.Invoice_id</p>
+                        <p><strong>Date:</strong> @Invoice.Datetime.ToString("dd-MM-yyyy HH:mm")</p>
+                        <p><strong>Product Name:</strong> @ProductName</p>
+                        <p><strong>Price:</strong> @ProductPrice</p>
+                        <p><strong>Address:</strong> @OrderAddress</p>
+                        <p><strong>NIF:</strong> @ClientNIF</p>
+                    </div>
+                }
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" @onclick="CloseModal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter] public int OrderId { get; set; }
+    [Parameter] public EventCallback OnClose { get; set; } 
+    private Invoice? Invoice { get; set; }
+    private bool IsLoading { get; set; } = true;
+    private string? ErrorMessage { get; set; }
+    private string? ProductName { get; set; } = "";
+    private string? ProductPrice { get; set; } = "";
+    private string? OrderAddress { get; set; } = "";
+    private string? ClientNIF { get; set; } = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadInvoice();
+    }
+
+    private async Task LoadInvoice()
+    {
+        try
+        {
+            IsLoading = true;
+            ErrorMessage = null;
+
+            Invoice = await _orders.GetInvoiceByOrder(OrderId);
+
+            if (Invoice == null)
+            {
+                ErrorMessage = "Invoice not found for the specified order.";
+            }
+            else
+            {
+                // Fetch product name based on the product ID in the invoice
+                var order = await _orders.GetOrder(OrderId);
+                if (order != null)
+                {
+                    var product = await _catalogs.GetProduct(order.Product_id);
+                    if (product != null)
+                    {
+                        ProductName = product.Name;
+                        ProductPrice = order.Price.ToString();
+                        OrderAddress = order.Address;
+                    }
+
+                    ClientNIF = await _clients.GetClientNif(order.Client_id);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = ex.Message;
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    private async Task CloseModal()
+    {
+        if (OnClose.HasDelegate)
+        {
+            await OnClose.InvokeAsync();
+        }
+    }
+}

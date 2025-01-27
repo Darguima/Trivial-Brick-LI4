@@ -31,10 +31,10 @@
                 <strong>Address:</strong> @Order.Address <br />
                 <strong>Date:</strong> @Order.Date.ToString("dd-MM-yyyy HH:mm:ss")
             </p>
+             <button class="btn btn-info check-invoice-button" @onclick="() => OnViewInvoice.InvokeAsync(Order)">Check Invoice</button>
         </div>
     </div>
 </div>
-
 
 @code {
     [Parameter]
@@ -46,9 +46,14 @@
     [Parameter]
     public EventCallback<Order> OnDelete { get; set; }
 
+    [Parameter]
+    public EventCallback<(int OrderId, string Address, DateTime Date, decimal Price)> OnCheckInvoice { get; set; }
+
+    [Parameter]
+    public EventCallback<Order> OnViewInvoice { get; set; }
+
     private bool IsAdmin { get; set; }
     private string? ProductImageUrl { get; set; }
-
     private string? ProductName { get; set; }
 
     protected override async Task OnInitializedAsync()

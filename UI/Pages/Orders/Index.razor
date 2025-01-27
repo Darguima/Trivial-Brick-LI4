@@ -8,7 +8,7 @@
     <div class="orders-container mt-3">
         @foreach (var ord in orders)
         {
-            <OrderCard Order="ord" OnEdit="ShowEditModal" OnDelete="DeleteOrder" />
+            <OrderCard Order="ord" OnEdit="ShowEditModal" OnDelete="DeleteOrder" OnViewInvoice="ShowInvoiceModal" />
         }
     </div>
 }
@@ -50,22 +50,20 @@ else
     </div>
 }
 
+@if (isInvoiceModalVisible)
+{
+    <InvoiceModal OrderId="selectedOrderId" OnClose="CloseInvoiceModal" />
+}
+
 @code {
-    /*
-    private int orderId;
-    private int productId;
-    private int clientId;
-    private decimal price;
-    private Order? order;
-    private string address = string.Empty;
-    private OrderState state = OrderState.Wait_line;
-    */
     private DateTime date = DateTime.Now;
     private List<Order>? orders;
     private string? errorMessage;
 
     private bool isEditModalVisible = false;
+    private bool isInvoiceModalVisible = false;
     private Order? orderToEdit;
+    private int selectedOrderId;
     private OrderState editOrderState;
     private string editOrderAddress = string.Empty;
     private bool IsAdmin = false;
@@ -87,7 +85,6 @@ else
                 {
                     IsAdmin = userSession.IsAdmin;
                 }
-
             }
         }
         catch
@@ -95,57 +92,7 @@ else
             IsAdmin = false; // Default to false
         }
         await GetAllOrders(); // Load data when the page initializes
-        
     }
-
-    /*
-    private async Task CreateOrder()
-    {
-        try
-        {
-            var userSession = await ((AuthStateProvider)AuthStateProvider).GetUserSession();
-            IsAdmin = userSession?.IsAdmin ?? false;
-        }
-        catch
-        {
-            IsAdmin = false; // Default to false
-        }
-    }
-
-    private async Task CreateOrder()
-    {
-        if (!IsAdmin)
-        {
-            errorMessage = "You do not have permission to create orders.";
-            return;
-        }
-
-        try
-        {
-            order = await _orders.CreateOrder(address, state, productId, clientId, price, date);
-            await GetAllOrders();
-        }
-        catch (Exception ex)
-        {
-            errorMessage = ex.Message;
-        }
-    }
-    
-
-    private async Task GetOrder()
-    {
-        try
-        {
-            order = await _orders.GetOrder(orderId);
-            orders = null;
-            errorMessage = null;
-        }
-        catch (Exception ex)
-        {
-            errorMessage = ex.Message;
-        }
-    }
-    */
 
     private async Task GetAllOrders()
     {
@@ -181,6 +128,17 @@ else
     private void CloseEditModal()
     {
         isEditModalVisible = false;
+    }
+
+    private void ShowInvoiceModal(Order order)
+    {
+        selectedOrderId = order.Order_id;
+        isInvoiceModalVisible = true;
+    }
+
+    private void CloseInvoiceModal()
+    {
+        isInvoiceModalVisible = false;
     }
 
     private async Task EditOrder()
