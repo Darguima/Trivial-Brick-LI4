@@ -44,6 +44,17 @@ public class BLCatalog(ProductRepository productRepository, PartRepository partR
         await productPartRepository.AddProductPart(partId, productId, quantity);
     }
 
+    public async Task AddPartToProductIfNotExists(int productId, int partId, int quantity)
+    {
+        var productPart = await productPartRepository.FindProductPart(partId, productId);
+        if (productPart != null)
+        {
+            return;
+        }
+
+        await AddPartToProduct(productId, partId, quantity);
+    }
+
     public async Task AddInstructionToProduct(int productId, int seqNum, string image, int qntParts)
     {
         await instructionRepository.AddInstruction(productId, seqNum, image, qntParts);
@@ -72,6 +83,17 @@ public class BLCatalog(ProductRepository productRepository, PartRepository partR
     public async Task<Part?> CreatePart(int partId, string image, int stock)
     {
         return await partRepository.AddPart(partId, image, stock);
+    }
+
+    public async Task<Part?> CreatePartIfNotExists(int partId, string image, int stock)
+    {
+        var part = await partRepository.FindPart(partId);
+        if (part != null)
+        {
+            return part;
+        }
+
+        return await CreatePart(partId, image, stock);
     }
 
     public async Task<Part?> GetPart(int partId)
