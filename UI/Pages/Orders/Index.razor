@@ -114,6 +114,7 @@ else
                     orders = await _orders.GetOrdersByClient(int.Parse(userSession.ID));
                 }
             }
+            orders = orders?.OrderByDescending(o => o.Order_id).ToList();
             errorMessage = null;
         }
         catch (Exception ex)
