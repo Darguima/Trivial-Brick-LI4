@@ -124,12 +124,14 @@ with open(parts_path, mode='r', newline='', encoding='utf-8') as file:
 
         product["parts"].append({
             "id": part_id,
-            "qnt": row[8],
+            "qnt": int(row[8]),
             "img": part_img_name 
         })
         
 print("\n====================================================\n")
 # ======================================================
+
+print("Generating the product.json file ...")
 
 with open(f"{output_dir}/product.json", "w") as f:
     dump(product, f, indent=4)

@@ -26,7 +26,7 @@ namespace TrivialBrick.Data.Repositories
 
         public async Task<Instruction> AddInstruction(int productId, int seqNum, string image, int qntParts)
         {
-            string sql = "insert into instructions (product_id, seq_num, image, quantity) values (@productId, @seqNum, @image, @qntParts)";
+            string sql = "insert into instructions (product_id, seq_num, image, qnt_parts) values (@productId, @seqNum, @image, @qntParts)";
             await _db.SaveData(sql, new { productId, seqNum, image, qntParts });
             return new Instruction { Product_id = productId, Seq_num = seqNum, Image = image, Qnt_parts = qntParts };
         }
