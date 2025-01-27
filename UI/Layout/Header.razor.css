@@ -12,31 +12,26 @@ header {
 
     border-bottom: 4px solid #E24800;
 
-    position: relative; 
+    position: relative;
 
-    box-shadow: 
+    box-shadow:
         0 1px 0 0 rgba(0, 0, 0, 0.5),
-        0 1px 0 0 rgba(0, 0, 0, 0.5); 
-   
-
-    
+        0 1px 0 0 rgba(0, 0, 0, 0.5);
 }
 
 .header-option img {
-    background-color: transparent; 
-    border: none; 
-    box-shadow: none; 
-    padding: 0; 
-    max-width: 160px; 
-    height: auto; 
+    background-color: transparent;
+    border: none;
+    box-shadow: none;
+    padding: 0;
+    max-width: 160px;
+    height: auto;
     position: relative;
     top: -5px;
     left: -45px;
 }
 
-
-
-.header-option:not(:has(img)){
+.header-option:not(:has(img)) {
     display: flex;
     align-items: center;
     justify-content: center;
