@@ -32,21 +32,25 @@
     private string? errorMessage;
     private string? ProductImageUrl { get; set; }
     private Timer? _timer;
+    private bool _isDisposed;
 
     protected override async Task OnInitializedAsync()
     {
         await LoadProductImage();
-        _timer = new Timer(async _ => await LoadProductImage(), null, 0, 1000);
+        _timer = new Timer(async _ => await InvokeAsync(LoadProductImage), null, 0, 1000);
     }
 
     private async Task LoadProductImage()
     {
+        if (_isDisposed) return;
+
         try
         {
             var line = await _assembly_lines.GetAssemblyLineByOrder(Order.Order_id);
             if (line == null)
             {
                 errorMessage = "No assembly line found for this order.";
+                await CloseModalAsync();
                 return;
             }
 
@@ -54,6 +58,7 @@
             if (instructions == null)
             {
                 errorMessage = "No instructions found for this product.";
+                await CloseModalAsync();
                 return;
             }
 
@@ -65,40 +70,53 @@
             {
                 for (int i = 0; i < instructions.Count; i++)
                 {
-                   dif_seconds -= instructions[i].Qnt_parts;
-                   if (dif_seconds <= 0)
-                   {
-                       ProductImageUrl = instructions[i].Image;
-                       break;
-                   }
+                    dif_seconds -= instructions[i].Qnt_parts;
+                    if (dif_seconds <= 0)
+                    {
+                        ProductImageUrl = instructions[i].Image;
+                        break;
+                    }
                 }
 
-                if (dif_seconds > 0 )
+                if (dif_seconds > 0)
                 {
                     // Order is complete, close the modal
-                    CloseModal();
+                    await CloseModalAsync();
                 }
             }
-            else 
+            else
             {
-                errorMessage = "No assembly line found for this order.";
-                CloseModal();
+                errorMessage = "Assembly start time is not available.";
+                await CloseModalAsync();
             }
         }
         catch (Exception ex)
         {
             errorMessage = ex.Message;
+            await CloseModalAsync();
         }
 
         await InvokeAsync(StateHasChanged);
     }
 
-    private void CloseModal()
+    private async Task CloseModalAsync()
     {
         _timer?.Dispose();
+        _timer = null;
         if (OnClose.HasDelegate)
         {
-            OnClose.InvokeAsync();
+            await OnClose.InvokeAsync();
         }
+    }
+
+    private void CloseModal()
+    {
+        CloseModalAsync().ConfigureAwait(false);
+    }
+
+    public void Dispose()
+    {
+        _isDisposed = true;
+        _timer?.Dispose();
     }
 }
