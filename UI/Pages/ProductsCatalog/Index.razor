@@ -81,7 +81,7 @@ else
                 ClientId = userSession?.ID ?? string.Empty;
             }
             
-            products = await _catalogs.GetAllProducts();
+            await LoadProducts();
             errorMessage = null;
         }
         catch (Exception ex)
