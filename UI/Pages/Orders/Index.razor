@@ -151,7 +151,15 @@ else
     {
         try
         {
-            orders = await _orders.GetAllOrders();
+            if (IsAdmin) {
+                orders = await _orders.GetAllOrders();
+            } else {
+                var userSession = await ((AuthStateProvider)AuthStateProvider).GetUserSession();
+                if (userSession != null)
+                {
+                    orders = await _orders.GetOrdersByClient(int.Parse(userSession.ID));
+                }
+            }
             errorMessage = null;
         }
         catch (Exception ex)
