@@ -35,10 +35,8 @@ if (not product_model.isnumeric()):
 product_model = int(product_model)
 
 instructions_path = input("Enter the path to the instructions PDF:")
-instructions_path = "/home/darguima/Downloads/TreviFountain_21020_zip/TreviFountain_21020_instructions.pdf"
 
 parts_path = input("Enter the path to the parts CSV:")
-parts_path = "/home/darguima/Downloads/TreviFountain_21020_zip/TreviFountain_21020_parts.csv"
 
 output_dir = f"{OUTPUT_DIR_BASEPATH}/{product_model}"
 os.makedirs(output_dir)
