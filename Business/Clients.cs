@@ -29,4 +29,10 @@ public class BLClients(ClientRepository clientRepository, AdminRepository adminR
     {
         return await adminRepository.FindByMailPassword(email, password);
     }
+
+    public async Task<string> GetClientNif(int id)
+    {
+        // returning the nif of a client by its id
+        return (await clientRepository.GetNIF(id)).ToString();
+    }
 }

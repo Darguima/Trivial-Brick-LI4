@@ -26,6 +26,13 @@ namespace TrivialBrick.Data.Repositories
             return _db.LoadData<Client, dynamic>(sql, new { });
         }
 
+        public async Task<int> GetNIF(int id)
+        {
+            string sql = "select NIF from Clients where User_ID = @id";
+            var result = await _db.LoadData<int, dynamic>(sql, new { id });
+            return result.FirstOrDefault();
+        }
+
         public async Task<Client> Add(string name, string email, string password, string nif)
         {
             string sql = @"
