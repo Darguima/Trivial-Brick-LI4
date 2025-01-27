@@ -16,8 +16,11 @@
             }
         </div>
         <div class="button-container">
-            <button class="btn-cancel" @onclick="CloseModal">Cancel</button>
-            <button class="btn-buy" @onclick="ShowPaymentModal">Buy</button>
+            <button class="btn-cancel" @onclick="CloseModal">Close</button>
+            @if (!IsAdmin)
+            {
+                <button class="btn-buy" @onclick="ShowPaymentModal">Buy</button>
+            }
             @if (IsAdmin)
             {
                 <button class="btn-edit" @onclick="ShowEditModal">Edit</button>
