@@ -4,10 +4,7 @@
     <div class="card-body">
         <div class="d-flex justify-content-between align-items-center">
             <div>
-                @if (!string.IsNullOrEmpty(ProductImageUrl))
-                {
-                    <img src="@ProductImageUrl" alt="" class="product-image" />
-                }
+                <img src="@ProductImageUrl" alt="" class="product-image" />
                 <h5 class="card-title mt-2">@ProductName</h5>
                 <p class="card-text">
                     <strong>Price:</strong> @Order.Price
@@ -47,9 +44,9 @@
     public EventCallback<Order> OnDelete { get; set; }
 
     private bool IsAdmin { get; set; }
-    private string? ProductImageUrl { get; set; }
+    private string ProductImageUrl { get; set; } = "/images/products/product_thumbnail_template.png";
 
-    private string? ProductName { get; set; }
+private string? ProductName { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
