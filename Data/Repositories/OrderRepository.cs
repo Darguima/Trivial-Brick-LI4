@@ -19,6 +19,12 @@ namespace TrivialBrick.Data.Repositories
             return _db.LoadData<Order, dynamic>(sql, new { });
         }
 
+        public Task<List<Order>> FindAllByClient(int client_id)
+        {
+            string sql = "select * from orders where Client_id = @client_id";
+            return _db.LoadData<Order, dynamic>(sql, new { client_id });
+        }
+
         public async Task<Order> Add(string address, OrderState state, int product_id, int client_id, decimal price, DateTime date)
         {
             string sql = @"

@@ -4,21 +4,23 @@
 <div class="notification-container" style="display: @(showNotifications ? "block" : "none")">
     <div class="notification-header">
         <h4>Notifications</h4>
-        <button class="close-button" @onclick="ToggleNotifications">X</button>
+        <button class="close-button" @onclick="() => ToggleNotificationsHandler()">X</button>
     </div>
     <ul class="list-group">
         @if (notifications != null && notifications.Count > 0)
         {
             @foreach (var notif in notifications.OrderByDescending(n => n.Datetime))
             {
-                <li class="list-group-item">
-                    <span class="time">@notif.Datetime.ToString("HH:mm")</span> - 
-                    <span class="message">@notif.Message</span> - 
-                    <span class="client-id">Client ID: @notif.Client_id</span> - 
-                    <span class="order-id">Order ID: @notif.Order_id</span> - 
-                    <span class="notification-id">Notification ID: @notif.Notification_id</span>
-                </li>
-            }
+            <li class="list-group-item">
+                <span class="time">@notif.Datetime.ToString("HH:mm")</span> - 
+                <span class="message">@notif.Message</span> - 
+                @if (IsAdmin)
+                {
+                    <span class="client-id">Client ID: @notif.Client_id</span>
+                }
+                <span class="order-id">Order ID: @notif.Order_id</span> 
+            </li>
+        }
         }
         else
         {
@@ -31,7 +33,12 @@
     private List<Notification>? notifications;
     private bool showNotifications = false;
 
-    protected override async Task OnInitializedAsync()
+    [Parameter]
+    public string ClientId { get; set; } = string.Empty;
+    [Parameter]
+    public bool IsAdmin { get; set; }
+
+    protected override async Task OnParametersSetAsync()
     {
         await LoadNotifications();
     }
@@ -40,7 +47,14 @@
     {
         try
         {
-            notifications = await _orders.GetAllNotifications();
+            if (IsAdmin)
+            {
+                notifications = await _orders.GetAllNotifications();
+            }
+            else if (!string.IsNullOrEmpty(ClientId) && int.TryParse(ClientId, out int clientId))
+            {
+                notifications = await _orders.GetNotificationsByClient(clientId);
+            }
         }
         catch (Exception ex)
         {
@@ -48,9 +62,20 @@
         }
     }
 
-    public void ToggleNotifications()
+    private async Task ToggleNotificationsHandler()
     {
+        await ToggleNotifications(ClientId, IsAdmin);
+    }
+
+    public async Task ToggleNotifications(string clientId, bool isAdmin)
+    {
+        ClientId = clientId;
+        IsAdmin = isAdmin;
         showNotifications = !showNotifications;
+        if (showNotifications)
+        {
+            await LoadNotifications();
+        }
         StateHasChanged(); // Ensure the UI is updated
     }
 }

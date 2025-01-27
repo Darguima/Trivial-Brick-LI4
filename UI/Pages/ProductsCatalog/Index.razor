@@ -1,5 +1,4 @@
 ﻿@page "/products-catalog"
-@inject AuthenticationStateProvider AuthStateProvider
 @rendermode InteractiveServer
 
 <PageTitle>Trivial Brick - Products</PageTitle>
@@ -36,6 +35,7 @@ else
 
 <ProductModal 
     @ref="productModal" 
+    ClientId="@ClientId"
     Name="@selectedProduct?.Name" 
     ProductId="@selectedProductId" 
     Price="@selectedProductPrice" 
@@ -48,26 +48,39 @@ else
     private List<Product>? products;
     private bool showCreateProductModal = false;
     private bool IsAdmin { get; set; }
-    private bool isInitialized = false;
     private Product? selectedProduct;
     private int selectedProductId => selectedProduct?.Model ?? 0;
     private decimal selectedProductPrice => selectedProduct?.Price ?? 0;
     private ProductModal? productModal;
 
+    private string ClientId { get; set; } = string.Empty;
+
+    private string? errorMessage;
+
     protected override async Task OnInitializedAsync()
     {
-        products = await _catalogs.GetAllProducts();
-    }
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender && !isInitialized)
+        try
         {
             var userSession = await ((AuthStateProvider)AuthStateProvider).GetUserSession();
-            IsAdmin = userSession?.IsAdmin ?? false;
-
-            isInitialized = true;
-            StateHasChanged();
+            var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+            bool IsAuthenticated = authState.User.Identity?.IsAuthenticated ?? false;
+            if (!IsAuthenticated)
+            {
+                NavigationManager.NavigateTo("/");
+            }
+            else
+            {
+                IsAdmin = userSession?.IsAdmin ?? false;
+                ClientId = userSession?.ID ?? string.Empty;
+            }
+            
+            products = await _catalogs.GetAllProducts();
+            errorMessage = null;
+        }
+        catch (Exception ex)
+        {
+            // Handle exception
+            errorMessage = ex.Message;
         }
     }
 
@@ -85,5 +98,21 @@ else
     private void OnModalClose()
     {
         selectedProduct = null;
+
+
+    }
+
+    private async Task LoadProducts()
+    {
+        try
+        {
+            products = await _catalogs.GetAllProducts();
+            errorMessage = null;
+        }
+        catch (Exception ex)
+        {
+            // Handle exception
+            errorMessage = ex.Message;
+        }
     }
 }

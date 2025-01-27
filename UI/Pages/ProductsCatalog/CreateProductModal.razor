@@ -1,3 +1,7 @@
+@using System.IO.Compression
+@using System.Text.Json;
+@using System.Collections.Generic;
+
 <Modal>
   <div class="container">
 
@@ -60,7 +64,7 @@
   private IBrowserFile? image;
   private int imageMaxAllowedSize = 1024 * 1024 * 15; // 15 MB limit
   private IBrowserFile? instructions;
-  private int instructionsMaxAllowedSize = 1024 * 1024 * 15; // 15 MB limit
+  private int instructionsMaxAllowedSize = 1024 * 1024 * 200; // 200 MB limit
 
   private string? errorMessage;
 
@@ -92,20 +96,21 @@
       // Try to create to check on DB if the fields are valid
       product = await _catalogs.CreateProduct(_model, name, _price, description, "");
 
-      // Try to add the thumbnail image
-      string relativeFolderPath = Path.Combine("uploads", "images", "products");
-      string fullPath = Path.Combine(System.Environment.CurrentDirectory, "wwwroot", relativeFolderPath);
-      string imageName = Guid.NewGuid().ToString("N") + Path.GetExtension(image.Name);
-      string imageRelativePath = Path.Combine(relativeFolderPath, imageName);
-      string imageFullPath = Path.Combine(fullPath, imageName);
-
-      if (!Directory.Exists(fullPath))
+      if (product == null)
       {
-        Directory.CreateDirectory(fullPath);
+        errorMessage = "Failed to create product";
+        return;
       }
 
-      await using FileStream fs = new(imageFullPath, FileMode.Create);
-      await image.OpenReadStream(maxAllowedSize: imageMaxAllowedSize).CopyToAsync(fs);
+      var zipSuccess = await UploadZip(instructions!, product);
+
+      if (!zipSuccess)
+      {
+        await _catalogs.RemoveProduct(product);
+        return;
+      }
+
+      var imageRelativePath = await UploadImage(image!);
 
       product!.Image = imageRelativePath;
       await _catalogs.UpdateProduct(product);
@@ -151,5 +156,148 @@
 
     instructions = file;
     errorMessage = null;
+  }
+
+  private async Task<string> UploadImage(IBrowserFile image)
+  {
+    // Try to add the thumbnail image
+    string relativeFolderPath = Path.Combine("uploads", "images", "products");
+    string fullPath = Path.Combine(System.Environment.CurrentDirectory, "wwwroot", relativeFolderPath);
+    string imageName = Guid.NewGuid().ToString("N") + Path.GetExtension(image.Name);
+    string imageRelativePath = Path.Combine(relativeFolderPath, imageName);
+    string imageFullPath = Path.Combine(fullPath, imageName);
+
+    if (!Directory.Exists(fullPath))
+    {
+      Directory.CreateDirectory(fullPath);
+    }
+
+    await using FileStream fs = new(imageFullPath, FileMode.Create);
+    await image.OpenReadStream(maxAllowedSize: imageMaxAllowedSize).CopyToAsync(fs);
+
+    return imageRelativePath;
+  }
+
+  private async Task<bool> UploadZip(IBrowserFile zip, Product product)
+  {
+    // Try to add the thumbnail image
+    string relativeFolderPath = Path.Combine("uploads", "temp");
+    string fullPath = Path.Combine(System.Environment.CurrentDirectory, "wwwroot", relativeFolderPath);
+    string zipName = Guid.NewGuid().ToString("N") + Path.GetExtension(zip.Name);
+    string zipRelativePath = Path.Combine(relativeFolderPath, zipName);
+    string zipFullPath = Path.Combine(fullPath, zipName);
+
+    if (!Directory.Exists(fullPath))
+    {
+      Directory.CreateDirectory(fullPath);
+    }
+
+    await using FileStream fs = new(zipFullPath, FileMode.Create);
+    await zip.OpenReadStream(maxAllowedSize: instructionsMaxAllowedSize).CopyToAsync(fs);
+
+    string extractPath = Path.Combine(fullPath, Guid.NewGuid().ToString("N"));
+    System.IO.Compression.ZipFile.ExtractToDirectory(zipFullPath, extractPath);
+    File.Delete(zipFullPath);
+
+    if (!Directory.Exists(Path.Combine(extractPath, product.Name)))
+    {
+      Directory.Delete(extractPath, true);
+      errorMessage = "Zip File not correct. Folder " + product.Name + " not found.";
+      return false;
+    }
+
+    string jsonFilePath = Path.Combine(extractPath, product.Name, "product.json");
+
+    if (!File.Exists(jsonFilePath))
+    {
+      errorMessage = "File not correct. `product.json` not found.";
+      Directory.Delete(extractPath, true);
+      return false;
+    }
+
+    string jsonContent = await File.ReadAllTextAsync(jsonFilePath);
+    ProductData? productData;
+    try
+    {
+      productData = JsonSerializer.Deserialize<ProductData>(jsonContent);
+    }
+    catch (Exception ex)
+    {
+      errorMessage = "Error parsing JSON file: " + ex.Message;
+      Directory.Delete(extractPath, true);
+      return false;
+    }
+
+    if (productData == null)
+    {
+      errorMessage = "Error parsing JSON file";
+      Directory.Delete(extractPath, true);
+      return false;
+    }
+
+    var instructionsImagesPath = Path.Combine("wwwroot", "uploads", "images", "instructions");
+
+    if (!Directory.Exists(instructionsImagesPath))
+    {
+      Directory.CreateDirectory(instructionsImagesPath);
+    }
+
+    for (int i = 0; i < productData.instructions.Count; i++)
+    {
+      var instruction = productData.instructions[i];
+      string sourceImagePath = Path.Combine(extractPath, product.Name, instruction.image);
+      var imageName = Guid.NewGuid().ToString("N") + Path.GetExtension(instruction.image);
+      string destImagePath = Path.Combine(instructionsImagesPath, imageName);
+
+      if (File.Exists(sourceImagePath))
+      {
+        File.Move(sourceImagePath, destImagePath);
+        var path = Path.Combine("uploads", "images", "instructions", imageName);
+        await _catalogs.AddInstructionToProduct(product.Model, i, path, instruction.qnt_parts);
+      } else {
+        errorMessage = "Error parsing JSON file. Image not found: " + sourceImagePath;
+        Directory.Delete(extractPath, true);
+        return false;
+      }
+    }
+
+    var partsImagesPath = Path.Combine("wwwroot", "uploads", "images", "parts");
+
+    if (!Directory.Exists(partsImagesPath))
+    {
+      Directory.CreateDirectory(partsImagesPath);
+    }
+
+    for (int i = 0; i < productData.parts.Count; i++)
+    {
+      var part = productData.parts[i];
+      string sourceImagePath = Path.Combine(extractPath, product.Name, part.img);
+      var imageName = Guid.NewGuid().ToString("N") + Path.GetExtension(part.img);
+      string destImagePath = Path.Combine(partsImagesPath, imageName);
+
+      if (File.Exists(sourceImagePath))
+      {
+        File.Copy(sourceImagePath, destImagePath);
+        var path = Path.Combine("uploads", "images", "parts", imageName);
+        var partCreated = await _catalogs.CreatePartIfNotExists(part.id, path, 0);
+
+        if (partCreated == null)
+        {
+          errorMessage = "Error creating part";
+          Directory.Delete(extractPath, true);
+          return false;
+        }
+
+        await _catalogs.AddPartToProductIfNotExists(product.Model, partCreated.Part_id, part.qnt);
+      } else {
+        errorMessage = "Error parsing JSON file. Image not found: " + sourceImagePath;
+        Directory.Delete(extractPath, true);
+        return false;
+      }
+    }  
+
+    Directory.Delete(extractPath, true);
+
+    return true;
   }
 }

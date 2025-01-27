@@ -1,0 +1,73 @@
+@inject AuthStateProvider AuthStateProvider
+
+<div class="card order-card mb-3">
+    <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                @if (!string.IsNullOrEmpty(ProductImageUrl))
+                {
+                    <img src="@ProductImageUrl" alt="" class="product-image" />
+                }
+                <h5 class="card-title mt-2">@ProductName</h5>
+                <p class="card-text">
+                    <strong>Price:</strong> @Order.Price
+                </p>
+            </div>
+            @if (IsAdmin)
+            {
+                <div class="text-end">
+                    <button class="btn btn-primary edit-button" @onclick="() => OnEdit.InvokeAsync(Order)">Edit</button>
+                    @if (Order.State == OrderState.Finished)
+                    {
+                        <button class="btn custom-delete-button" @onclick="() => OnDelete.InvokeAsync(Order)">Delete</button>
+                    }
+                </div>
+            }
+        </div>
+        <div class="text-center mt-3">
+            <p class="card-text">
+                <strong>Order ID:</strong> @Order.Order_id <br />
+                <strong>State:</strong> @Order.State <br />
+                <strong>Address:</strong> @Order.Address <br />
+                <strong>Date:</strong> @Order.Date.ToString("dd-MM-yyyy HH:mm:ss")
+            </p>
+             <button class="btn btn-info check-invoice-button" @onclick="() => OnViewInvoice.InvokeAsync(Order)">Check Invoice</button>
+        </div>
+    </div>
+</div>
+
+
+@code {
+    [Parameter]
+    public Order Order { get; set; } = default!;
+
+    [Parameter]
+    public EventCallback<Order> OnEdit { get; set; }
+
+    [Parameter]
+    public EventCallback<Order> OnDelete { get; set; }
+
+    [Parameter]
+    public EventCallback<(int OrderId, string Address, DateTime Date, decimal Price)> OnCheckInvoice { get; set; }
+
+    [Parameter]
+    public EventCallback<Order> OnViewInvoice { get; set; }
+
+    private bool IsAdmin { get; set; }
+    private string? ProductImageUrl { get; set; }
+    private string? ProductName { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var userSession = await AuthStateProvider.GetUserSession();
+        IsAdmin = userSession?.IsAdmin ?? false;
+
+        // geting image url and product name
+        var product = await _catalogs.GetProduct(Order.Product_id);
+        if (product != null)
+        {
+            ProductImageUrl = product.Image;
+            ProductName = product.Name;
+        }
+    }
+}

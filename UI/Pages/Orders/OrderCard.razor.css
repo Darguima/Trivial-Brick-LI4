@@ -1,0 +1,44 @@
+.order-card {
+    border: 1px solid #000;
+    padding: 10px;
+    background-color: #F59B5E;
+}
+
+.custom-edit-state-button {
+    background-color: #FFC107;
+    color: #000; 
+    border: 1px solid #000;
+    transition: background-color 0.3s ease; 
+}
+
+.custom-delete-button {
+    background-color: #DC3545;
+    color: #000;
+    border: 1px solid #000;
+    transition: background-color 0.3s ease; 
+}
+
+.product-image {
+    max-width: 100px;
+    max-height: 100px;
+    margin-top: 10px;
+    margin-left: 10px;
+}
+
+
+.check-invoice-button {
+    background-color: #FA812F; 
+    color: black; 
+    border-color: black;
+    border-width: 1px;
+    border-style: solid;
+    border-radius: 10px; 
+    padding: 0.5rem 1rem; 
+    font-size: 1rem; 
+    cursor: pointer; 
+    transition: background-color 0.3s ease; 
+}
+
+.check-invoice-button:hover {
+    background-color: #E6731F; 
+}

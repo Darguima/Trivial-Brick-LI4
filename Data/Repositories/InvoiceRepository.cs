@@ -55,5 +55,12 @@ namespace TrivialBrick.Data.Repositories
             string sql = "delete from invoices where invoice_id = @Invoice_id";
             return _db.SaveData(sql, invoice);
         }
+
+        public async Task <Invoice?> FindByOrder(int order_id)
+        {
+            string sql = "select * from invoices where order_id = @order_id";
+            var invoices = await _db.LoadData<Invoice, dynamic>(sql, new { order_id });
+            return invoices?.FirstOrDefault();
+        }
     }
 }

@@ -39,6 +39,11 @@ public class BLOrders(OrderRepository orderRepository, NotificationRepository no
         return await orderRepository.FindAll();
     }
 
+    public async Task<List<Order>> GetOrdersByClient(int client_id)
+    {
+        return await orderRepository.FindAllByClient(client_id);
+    }
+
     public async Task UpdateOrder(Order assemblyLine)
     {
         await orderRepository.Update(assemblyLine);
@@ -74,6 +79,12 @@ public class BLOrders(OrderRepository orderRepository, NotificationRepository no
         await invoiceRepository.Remove(invoice);
     }
 
+    public async Task<Invoice?> GetInvoiceByOrder(int order_id)
+    {
+        return await invoiceRepository.FindByOrder(order_id);
+    }
+
+
     public async Task<Notification?> CreateNotification(string message, DateTime datetime, int client_id, int order_id)
     {
         return await notificationRepository.Add(message, datetime, client_id, order_id);
@@ -87,6 +98,11 @@ public class BLOrders(OrderRepository orderRepository, NotificationRepository no
     public async Task<List<Notification>> GetAllNotifications()
     {
         return await notificationRepository.FindAll();
+    }
+
+    public async Task<List<Notification>> GetNotificationsByClient(int client_id)
+    {
+        return await notificationRepository.FindAllByClient(client_id);
     }
 
     public async Task UpdateNotification(Notification notification)
