@@ -27,16 +27,16 @@
 
 
 .check-invoice-button {
-    background-color: #FA812F; /* Cor de fundo laranja escuro */
-    color: black; /* Cor do texto */
-    border-color: black; /* Cor da borda */
+    background-color: #FA812F; 
+    color: black; 
+    border-color: black;
     border-width: 1px;
     border-style: solid;
-    border-radius: 10px; /* Borda arredondada */
-    padding: 0.5rem 1rem; /* Ajuste de espaçamento */
-    font-size: 1rem; /* Tamanho da fonte */
-    cursor: pointer; /* Mostra o cursor ao passar */
-    transition: background-color 0.3s ease; /* Suavidade na mudança de cor */
+    border-radius: 10px; 
+    padding: 0.5rem 1rem; 
+    font-size: 1rem; 
+    cursor: pointer; 
+    transition: background-color 0.3s ease; 
 }
 
 .check-invoice-button:hover {
