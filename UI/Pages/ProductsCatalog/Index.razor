@@ -19,13 +19,15 @@ else
     }
 
     <div class="products-container">
-        @foreach (var prod in products)
-        {
-            <div @onclick="() => ShowBuyProductModal(prod)">
-                <ProductCard Name="@prod.Name" Price="@prod.Price" Image="@prod.Image" HaveStock="@true" />
-            </div>
-        }
-    </div>
+    @foreach (var prod in products)
+    {
+        var haveStock = productStockMap.TryGetValue(prod.Model, out var stock) && stock;
+        <div @onclick="() => ShowBuyProductModal(prod)">
+            <ProductCard Name="@prod.Name" Price="@prod.Price" Image="@prod.Image" HaveStock="@haveStock" />
+        </div>
+    }
+</div>
+
 }
 
 @if (showCreateProductModal)
@@ -40,10 +42,10 @@ else
     ProductId="@selectedProductId" 
     Price="@selectedProductPrice" 
     Image="@selectedProduct?.Image" 
-    HaveStock="@true" 
+    HaveStock="@SelectedProductHaveStock" 
     IsAdmin="@IsAdmin"
-    OnClose="OnModalClose" 
-/>
+    OnClose="OnModalClose">
+</ProductModal>
 
 @code {
     private List<Product>? products;
@@ -54,9 +56,13 @@ else
     private decimal selectedProductPrice => selectedProduct?.Price ?? 0;
     private ProductModal? productModal;
 
+    private bool SelectedProductHaveStock => productStockMap.TryGetValue(selectedProductId, out var stock) && stock;
+
     private string ClientId { get; set; } = string.Empty;
 
     private string? errorMessage;
+
+    private Dictionary<int, bool> productStockMap = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -75,7 +81,7 @@ else
                 ClientId = userSession?.ID ?? string.Empty;
             }
             
-            products = await _catalogs.GetAllProducts();
+            await LoadProducts();
             errorMessage = null;
         }
         catch (Exception ex)
@@ -106,16 +112,38 @@ else
     }
 
     private async Task LoadProducts()
+{
+    try
     {
-        try
+        // Carrega todos os produtos
+        products = await _catalogs.GetAllProducts();
+
+        // Carrega o estoque de cada produto
+        if (products != null)
         {
-            products = await _catalogs.GetAllProducts();
-            errorMessage = null;
+            foreach (var product in products)
+            {
+                var stock = await _catalogs.GetStock(product.Model);
+                productStockMap[product.Model] = stock;
+            }
         }
-        catch (Exception ex)
+        errorMessage = null;
+    }
+    catch (Exception ex)
+    {
+        // Tratar erros
+        errorMessage = ex.Message;
+    }
+}
+
+
+    private async Task<bool> CheckStock(Product? product)
+    {
+        if (product == null)
         {
-            // Handle exception
-            errorMessage = ex.Message;
+            return false;
         }
+        var stock = await _catalogs.GetStock(product.Model);
+        return stock;
     }
 }

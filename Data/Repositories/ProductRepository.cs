@@ -37,5 +37,27 @@ namespace TrivialBrick.Data.Repositories
             string sql = "delete from products where model = @Model";
             return _db.SaveData(sql, product);
         }
+
+
+        public async Task<bool> CheckStock(int productId)
+        {
+
+            string sql = @"
+                SELECT pp.part_id, pp.quantity, p.stock
+                FROM products_parts pp
+                JOIN parts p ON pp.part_id = p.part_id
+                WHERE pp.product_id = @ProductId
+                AND p.stock < pp.quantity";
+
+            var insufficientParts = await _db.LoadData<dynamic, dynamic>(sql, new { ProductId = productId });
+
+            if (insufficientParts.Any())
+            {
+                return false;
+            }
+
+            return true;
+        }
+
     }
 }

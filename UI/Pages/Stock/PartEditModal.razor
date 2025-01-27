@@ -1,17 +1,21 @@
+@rendermode InteractiveServer
 @if (IsVisible && PartToEdit != null)
 {
+    <div class="modal-backdrop fade show"></div>
     <div class="modal show d-block" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Part</h5>
+                </div>
                 <div class="modal-body">
                     <div class="form-group">
                         <label for="editPartStock">Quantity</label>
                         <input type="number" class="form-control" id="editPartStock" @bind="editPartStock" />
                     </div>
                     <div class="form-group">
-                        <label for="imageUrl">Image URL</label>
-                        <input type="text" id="imageUrl" class="form-control" @bind="imageUrl" />
-                        <small class="form-text text-muted">Current URL: @PartToEdit.Image</small>
+                        <label for="editPartImage">Image</label>
+                        <InputFile class="form-control" id="editPartImage" OnChange="OnImageSelected" />
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -32,26 +36,55 @@
     [Parameter] public EventCallback<Part> OnDelete { get; set; }
 
     private int editPartStock;
-    private string? imageUrl;
+    private IBrowserFile? editPartImage;
 
     protected override void OnParametersSet()
     {
         if (PartToEdit != null)
         {
             editPartStock = PartToEdit.Stock;
-            imageUrl = PartToEdit.Image;
         }
+    }
+    private async Task OnImageSelected(InputFileChangeEventArgs e)
+    {
+        editPartImage = e.File;
+        await Task.CompletedTask;
     }
 
     private async Task Save()
     {
         if (PartToEdit != null)
         {
-            // Update the image URL and stock
-            PartToEdit.Image = imageUrl ?? string.Empty; // If imageUrl is null, assign an empty string
+            // Update the stock
             PartToEdit.Stock = editPartStock;
+
+            // Update the image if a new one was uploaded
+            if (editPartImage != null)
+            {
+                PartToEdit.Image = await UploadImage(editPartImage);
+            }
+
             await OnSave.InvokeAsync(PartToEdit);
         }
+    }
+
+    private async Task<string> UploadImage(IBrowserFile image)
+    {
+        string relativeFolderPath = Path.Combine("uploads", "images", "parts");
+        string fullPath = Path.Combine(Environment.CurrentDirectory, "wwwroot", relativeFolderPath);
+        string imageName = Guid.NewGuid().ToString("N") + Path.GetExtension(image.Name);
+        string imageRelativePath = Path.Combine(relativeFolderPath, imageName);
+        string imageFullPath = Path.Combine(fullPath, imageName);
+
+        if (!Directory.Exists(fullPath))
+        {
+            Directory.CreateDirectory(fullPath);
+        }
+
+        await using FileStream fs = new(imageFullPath, FileMode.Create);
+        await image.OpenReadStream(maxAllowedSize: 10 * 1024 * 1024).CopyToAsync(fs);
+
+        return imageRelativePath;
     }
 
     private async Task Delete()

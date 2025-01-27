@@ -23,15 +23,19 @@
     text-align: center; 
 }
 
+
+
 .custom-card-btn {
-    background-color: #FFC107;
-    color: #000; 
-    border: 1px solid #000;
-    transition: background-color 0.3s ease;
-    margin-left: auto;
-    margin-bottom: 10px;
+    background-color: #f76300 !important;
+    border: none;
+    color: white;
+    font-size: 16px;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
 }
 
 .custom-card-btn:hover {
-    background-color: #cc9f0a; 
+    background-color: #E24800 !important; 
 }
