@@ -2,6 +2,12 @@
 
 <header>
 
+    <div class="header-option">
+        <NavLink class="nav-link" href="/"></NavLink>
+        <img src="/images/LogoTrivial.png" alt="Logo">
+    </div>
+
+
     @if (IsAuthenticated)
     {
         @if (IsAdmin)
@@ -42,10 +48,10 @@
         </div>
 
         <div class="header-option">
-            <NavLink class="nav-link" href="" @onclick="Logout">
-                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true">Logout</span>
-            </NavLink>
-        </div>
+        <NavLink class="nav-link" href="" @onclick="Logout">
+            <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true">Logout</span>
+        </NavLink>
+    </div>
     }
 </header>
 
