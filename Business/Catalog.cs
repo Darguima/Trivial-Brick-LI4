@@ -162,4 +162,8 @@ public class BLCatalog(ProductRepository productRepository, PartRepository partR
     {
         return await instructionRepository.FindInstructionsByProduct(productId);
     }
+
+    public async Task<bool> GetStock (int productId) {
+        return await productRepository.CheckStock(productId);
+    }
 }

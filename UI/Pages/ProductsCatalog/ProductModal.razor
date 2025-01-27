@@ -19,7 +19,9 @@
             <button class="btn-cancel" @onclick="CloseModal">Close</button>
             @if (!IsAdmin)
             {
+                @if(HaveStock) {
                 <button class="btn-buy" @onclick="ShowPaymentModal">Buy</button>
+                }
             }
             @if (IsAdmin)
             {
@@ -89,8 +91,7 @@
     public required string Image { get; set; }
 
     [Parameter]
-    public bool HaveStock { get; set; } = true;
-
+    public bool HaveStock { get; set; } 
     [Parameter]
     public bool IsAdmin { get; set; }
 
