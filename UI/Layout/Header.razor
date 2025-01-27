@@ -61,15 +61,14 @@
     private NotificationComponent? notificationComponent;
     private bool IsAuthenticated { get; set; }
     private bool IsAdmin { get; set; }
-    private bool _isInitialized = false;
     private string ClientId { get; set; } = string.Empty;
+    private bool _isInitialized = false;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender && !_isInitialized)
         {
             AuthStateProvider.AuthenticationStateChanged += OnAuthenticationStateChanged;
-
             await UpdateAuthenticationState();
             _isInitialized = true;
             StateHasChanged();
@@ -78,18 +77,32 @@
 
     private async void OnAuthenticationStateChanged(Task<AuthenticationState> authStateTask)
     {
-        await UpdateAuthenticationState();
-        StateHasChanged();
+        try
+        {
+            await UpdateAuthenticationState();
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error updating authentication state: {ex.Message}");
+        }
     }
 
     private async Task UpdateAuthenticationState()
     {
-        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
-        IsAuthenticated = authState.User.Identity?.IsAuthenticated ?? false;
+        try
+        {
+            var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+            IsAuthenticated = authState.User.Identity?.IsAuthenticated ?? false;
 
-        var userSession = await AuthStateProvider.GetUserSession();
-        IsAdmin = userSession?.IsAdmin ?? false;
-        ClientId = userSession?.ID ?? string.Empty;
+            var userSession = await AuthStateProvider.GetUserSession();
+            IsAdmin = userSession?.IsAdmin ?? false;
+            ClientId = userSession?.ID ?? string.Empty;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error updating authentication state: {ex.Message}");
+        }
     }
 
     private async Task ToggleNotifications()

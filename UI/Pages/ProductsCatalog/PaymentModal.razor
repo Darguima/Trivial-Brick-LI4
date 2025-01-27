@@ -87,6 +87,9 @@
 
     private bool ValidateCardNumber(string cardNumber)
     {
+        // mastercard and visa are 16 digits, some are 19 digits but we'll accept 16 or 19
+        // not the ideal regex but it's good enough for this example
+        // we should have a more robust validation in a real application
         return System.Text.RegularExpressions.Regex.IsMatch(cardNumber, @"^\d{16}$|^\d{19}$");
     }
 
