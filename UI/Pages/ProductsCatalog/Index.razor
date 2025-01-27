@@ -84,9 +84,10 @@ else
         }
     }
 
-    private void ToggleCreateProductModal()
+    private async Task ToggleCreateProductModal()
     {
         showCreateProductModal = !showCreateProductModal;
+        await LoadProducts();
     }
 
     private void ShowBuyProductModal(Product product)
