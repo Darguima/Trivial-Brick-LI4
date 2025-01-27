@@ -8,67 +8,25 @@
     </div>
 
 
-    <div class="header-option">
-        <NavLink class="nav-link" href="/products-catalog" activeClass="active">
-            <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true">Products Catalog</span>
-        </NavLink>
-    </div>
-
-    <div class="header-option">
-        <NavLink class="nav-link" href="/assemblyLines" activeClass="active">
-            <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true">Assembly Lines</span>
-        </NavLink>
-    </div>
-
-    <div class="header-option">
-        <NavLink class="nav-link" href="/orders" activeClass="active">
-            <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true">Orders</span>
-        </NavLink>
-    </div>
-
-    <div class="header-option">
-        <NavLink class="nav-link" href="/stock" activeClass="active">
-            <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true">Stock</span>
-        </NavLink>
-    </div>
-
-    <div class="header-option">
-        <NavLink class="nav-link" href="/invoices" activeClass="active">
-            <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true">Invoices</span>
-        </NavLink>
-    </div>
-
-    <div class="header-option">
-        <NavLink class="nav-link" href="/notifications" activeClass="active">
-            <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true">Notifications</span>
-        </NavLink>
-    </div>
-
-    <div class="header-option">
-        <NavLink class="nav-link notification-button" @onclick="ToggleNotifications">
-            <span class="bi bi-bell-fill" aria-hidden="true"></span>
-        </NavLink>
-    </div>
-
     @if (IsAuthenticated)
     {
         @if (IsAdmin)
         {
             <div class="header-option">
-                <NavLink class="nav-link" href="/assemblyLines" activeClass="active">
+                <NavLink class="nav-link" href="/assemblyLines">
                     <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true">Lines</span>
                 </NavLink>
             </div>
         }
 
         <div class="header-option">
-            <NavLink class="nav-link" href="/products-catalog" activeClass="active">
+            <NavLink class="nav-link" href="/products-catalog">
                 <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true">Catalog</span>
             </NavLink>
         </div>
 
         <div class="header-option">
-            <NavLink class="nav-link" href="/orders" activeClass="active">
+            <NavLink class="nav-link" href="/orders">
                 <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true">Orders</span>
             </NavLink>
         </div>
@@ -76,7 +34,7 @@
         @if (IsAdmin)
         {
             <div class="header-option">
-                <NavLink class="nav-link" href="/stock" activeClass="active">
+                <NavLink class="nav-link" href="/stock">
                     <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true">Stock</span>
                 </NavLink>
             </div>
