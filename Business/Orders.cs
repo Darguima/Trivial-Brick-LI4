@@ -12,7 +12,7 @@ This business layer is responsible by:
 
 */
 
-public class BLOrders(OrderRepository orderRepository, NotificationRepository notificationRepository, InvoiceRepository invoiceRepository)
+public class BLOrders(OrderRepository orderRepository, NotificationRepository notificationRepository, InvoiceRepository invoiceRepository, ProductPartRepository productPartRepository, PartRepository partRepository)
 {
     public async Task<Order?> CreateOrder(string address, OrderState state, int product_id, int client_id, decimal price, DateTime date)
     {
@@ -20,6 +20,18 @@ public class BLOrders(OrderRepository orderRepository, NotificationRepository no
 
         if (order != null)
         {
+            var parts = await productPartRepository.FindAllProductPartsByProduct(product_id);
+            if (parts != null)  {
+                foreach (var partProduct in parts)
+                {
+                    var part = await partRepository.FindPart(partProduct.Part_id);
+                    if (part != null)
+                    {
+                        part.Stock -= partProduct.Quantity;
+                        await partRepository.UpdatePart(part);
+                    }
+                }
+            }
             await CreateInvoice(DateTime.Now, client_id, order.Order_id);
             await CreateNotification("Order queued for assembly line", date, client_id, order.Order_id);
 
