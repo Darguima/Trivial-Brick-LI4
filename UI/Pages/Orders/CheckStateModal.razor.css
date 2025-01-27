@@ -1,0 +1,79 @@
+/* Modal backdrop */
+.modal-backdrop {
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1040; /* Ensures it appears above other elements */
+}
+
+/* Modal dialog container */
+.modal-dialog {
+    max-width: 800px; /* Adjust width for larger images */
+    margin: auto;
+}
+
+/* Modal content styling */
+.modal-content {
+    background-color: #F59B5E; /* Orange background */
+    border-radius: 15px; /* Rounded corners */
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.25); /* Subtle shadow */
+    border: 2px solid #000; /* Black border */
+}
+
+/* Modal body */
+.modal-body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    text-align: center;
+}
+
+/* Image inside the modal */
+.modal-body img {
+    max-width: 100%; /* Ensure image doesn't exceed container */
+    height: auto;
+    border: 2px solid #000; /* Black border for images */
+    border-radius: 10px;
+}
+
+/* Loading and error message styling */
+.modal-body p,
+.modal-body .alert {
+    font-family: 'Arial', sans-serif;
+    font-size: 1.2rem;
+    color: #000;
+}
+
+/* Modal footer */
+.modal-footer {
+    display: flex;
+    justify-content: center;
+    padding: 15px;
+    background-color: #FA812F; /* Darker orange */
+    border-top: 2px solid #000; /* Black border */
+    border-bottom-left-radius: 15px;
+    border-bottom-right-radius: 15px;
+}
+
+/* Close button */
+.modal-footer .btn-secondary {
+    background-color: #000; /* Black background */
+    color: #FFF; /* White text */
+    border: none;
+    font-size: 1rem;
+    padding: 10px 20px;
+    border-radius: 10px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+/* Close button hover effect */
+.modal-footer .btn-secondary:hover {
+    background-color: #333; /* Slightly lighter black */
+    transform: scale(1.05); /* Slight enlargement on hover */
+    cursor: pointer;
+}

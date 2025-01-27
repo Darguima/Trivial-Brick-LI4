@@ -157,4 +157,9 @@ public class BLCatalog(ProductRepository productRepository, PartRepository partR
             throw new Exception("No parts found for this product");
         }
     }
+
+    public async Task<List<Instruction>> GetInstructionsByProduct(int productId)
+    {
+        return await instructionRepository.FindInstructionsByProduct(productId);
+    }
 }

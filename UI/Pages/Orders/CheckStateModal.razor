@@ -1,0 +1,108 @@
+<div class="modal-backdrop fade show"></div>
+
+<div class="modal show d-block" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                <h5 class="text-center mb-3">Order Status #@Order.Order_id</h5>
+                @if (!string.IsNullOrEmpty(ProductImageUrl))
+                {
+                    <img src="@ProductImageUrl" alt="Assembly State Image" class="img-fluid" />
+                }
+                else if (!string.IsNullOrEmpty(errorMessage))
+                {
+                    <div class="alert alert-danger text-center">@errorMessage</div>
+                }
+                else
+                {
+                    <p class="text-center">Loading image...</p>
+                }
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" @onclick="CloseModal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter] public Order Order { get; set; } = default!;
+    [Parameter] public EventCallback OnClose { get; set; }
+
+    private string? errorMessage;
+    private string? ProductImageUrl { get; set; }
+    private Timer? _timer;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadProductImage();
+        _timer = new Timer(async _ => await LoadProductImage(), null, 0, 1000);
+    }
+
+    private async Task LoadProductImage()
+    {
+        try
+        {
+            var line = await _assembly_lines.GetAssemblyLineByOrder(Order.Order_id);
+            if (line == null)
+            {
+                errorMessage = "No assembly line found for this order.";
+                return;
+            }
+
+            var instructions = await _catalogs.GetInstructionsByProduct(Order.Product_id);
+            if (instructions == null)
+            {
+                errorMessage = "No instructions found for this product.";
+                return;
+            }
+
+            var date = DateTime.Now;
+            var begin_date = line.Mount_start_time;
+            var dif_seconds = begin_date.HasValue ? (date - begin_date.Value).TotalSeconds : (double?)null;
+
+            if (dif_seconds.HasValue)
+            {
+                for (int i = 0; i < instructions.Count; i++)
+                {
+                   dif_seconds -= instructions[i].Qnt_parts;
+                   if (dif_seconds <= 0)
+                   {
+                       ProductImageUrl = instructions[i].Image;
+                       break;
+                   }
+                }
+
+                if (dif_seconds > 0 )
+                {
+                    // Order is complete, close the modal
+                    CloseModal();
+                }
+                {
+                    // Order is complete, close the modal
+                    CloseModal();
+                }
+            }
+            else 
+            {
+                errorMessage = "No assembly line found for this order.";
+                CloseModal();
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = ex.Message;
+        }
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private void CloseModal()
+    {
+        _timer?.Dispose();
+        if (OnClose.HasDelegate)
+        {
+            OnClose.InvokeAsync();
+        }
+    }
+}
